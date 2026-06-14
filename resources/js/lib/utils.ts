@@ -23,17 +23,26 @@ import { Permission } from '@/types';
 
 type AuthProps = {
     permissions?: Permission[];
+    roles?: string[];
 };
 
 export default function hasAnyPermission(permissions: string[]) {
     const { auth } = usePage().props as { auth?: AuthProps };
-    
-    // Handle case when user is not logged in
-    if (!auth || !auth.permissions) {
-        return false;
-    }
+
+    if (!auth || !auth.permissions) return false;
 
     const allPermissions: string[] = auth.permissions.map((p: Permission) => p.name);
-
     return permissions.some(p => allPermissions.includes(p));
+}
+
+export function useRole() {
+    const { auth } = usePage().props as { auth?: AuthProps };
+    const roles = auth?.roles ?? [];
+
+    return {
+        isAdmin:  roles.includes('admin'),
+        isVendor: roles.includes('vendor'),
+        isUser:   roles.includes('user'),
+        hasRole:  (role: string) => roles.includes(role),
+    };
 }

@@ -2,26 +2,40 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RoleSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $roles = [
-            'admin',
-            'user',
+        $admin  = Role::firstOrCreate(['name' => 'admin',  'guard_name' => 'web']);
+        $vendor = Role::firstOrCreate(['name' => 'vendor', 'guard_name' => 'web']);
+        $user   = Role::firstOrCreate(['name' => 'user',   'guard_name' => 'web']);
+
+        // Admin gets all permissions via Gate::before — no explicit grant needed.
+        // Vendor permissions
+        $vendorPermissions = [
+            'brands index', 'brands edit', 'brands show',
+            'brands packages index', 'brands packages create', 'brands packages edit',
+            'brands packages delete', 'brands packages show',
+            'brands portfolios index', 'brands portfolios create', 'brands portfolios edit',
+            'brands portfolios delete', 'brands portfolios show',
+            'testimonials index', 'testimonials moderate',
+            'inquiries index', 'inquiries show', 'inquiries update',
+            'availability manage',
         ];
 
-        foreach ($roles as $role) {
-            \Spatie\Permission\Models\Role::create(['name' => $role]);
-        }
+        // Customer (user) permissions
+        $userPermissions = [
+            'testimonials create',
+            'favorites index', 'favorites create', 'favorites delete',
+            'event plans index', 'event plans create', 'event plans edit', 'event plans delete',
+            'inquiries create',
+        ];
 
-        $admin = \Spatie\Permission\Models\Role::findByName('admin');;
-        $admin->givePermissionTo(\Spatie\Permission\Models\Permission::all());  
+        $vendor->syncPermissions(Permission::whereIn('name', $vendorPermissions)->get());
+        $user->syncPermissions(Permission::whereIn('name', $userPermissions)->get());
     }
 }

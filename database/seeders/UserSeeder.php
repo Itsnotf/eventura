@@ -12,15 +12,14 @@ class UserSeeder extends Seeder
         $admin = User::firstOrCreate(
             ['email' => 'admin@gmail.com'],
             [
-                'name'               => 'Admin',
-                'password'           => 'password',
-                'email_verified_at'  => now(),
+                'name'              => 'Admin',
+                'password'          => 'password',
+                'email_verified_at' => now(),
             ]
         );
-        $admin->assignRole('admin');
+        $admin->syncRoles(['admin']);
 
-        \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'user']);
-
+        // Brand owners are vendors
         $brandOwners = [
             ['name' => 'Rina Wijayanti',   'email' => 'rina@mahkotabridal.id'],
             ['name' => 'Budi Santoso',      'email' => 'budi@nuansaeventpro.id'],
@@ -43,7 +42,18 @@ class UserSeeder extends Seeder
                     'email_verified_at' => now(),
                 ]
             );
-            $user->assignRole('user');
+            $user->syncRoles(['vendor']);
         }
+
+        // Demo customer account
+        $customer = User::firstOrCreate(
+            ['email' => 'customer@gmail.com'],
+            [
+                'name'              => 'Demo Customer',
+                'password'          => 'password',
+                'email_verified_at' => now(),
+            ]
+        );
+        $customer->syncRoles(['user']);
     }
 }
