@@ -48,7 +48,8 @@ interface Analytics {
 }
 
 interface Props {
-    isAdmin: boolean;
+    role?: 'admin' | 'vendor' | 'user';
+    isAdmin?: boolean;
     stats?: AdminStats | BrandOwnerStats | null;
     recentBrands?: (Brand & { user?: User })[];
     recentUsers?: (User & { roles?: { name: string }[] })[];
@@ -423,6 +424,23 @@ function BrandOwnerDashboard({ brand, stats, recentPackages, recentPortfolios, a
     );
 }
 
+function CustomerDashboard() {
+    return (
+        <div className="flex h-[70vh] flex-col items-center justify-center gap-4 text-center p-6">
+            <Users className="h-12 w-12 text-muted-foreground/50" />
+            <h2 className="text-xl font-semibold">Selamat datang!</h2>
+            <p className="text-muted-foreground max-w-md">
+                Jelajahi vendor event dan wedding organizer terbaik, simpan favorit, buat rencana acara, dan kirim inquiry — semua dalam satu platform.
+            </p>
+            <div className="flex gap-3">
+                <Link href="/explore">
+                    <Button>Jelajahi Vendor</Button>
+                </Link>
+            </div>
+        </div>
+    );
+}
+
 function NoBrandState() {
     return (
         <div className="flex h-[70vh] flex-col items-center justify-center gap-4 text-center">
@@ -435,18 +453,22 @@ function NoBrandState() {
     );
 }
 
-export default function Dashboard({ isAdmin, stats, recentBrands, recentUsers, brand, recentPackages, recentPortfolios, analytics, topBrands }: Props) {
+export default function Dashboard({ role, isAdmin, stats, recentBrands, recentUsers, brand, recentPackages, recentPortfolios, analytics, topBrands }: Props) {
+    const effectiveRole = role ?? (isAdmin ? 'admin' : 'vendor');
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
 
-            {isAdmin ? (
+            {effectiveRole === 'admin' ? (
                 <AdminDashboard
                     stats={stats as AdminStats}
                     recentBrands={recentBrands}
                     recentUsers={recentUsers}
                     topBrands={topBrands}
                 />
+            ) : effectiveRole === 'user' ? (
+                <CustomerDashboard />
             ) : brand ? (
                 <BrandOwnerDashboard
                     brand={brand}

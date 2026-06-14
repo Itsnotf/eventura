@@ -9,6 +9,7 @@ use App\Http\Controllers\ImagePortfolioController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VendorApplicationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LandingController::class, 'home'])->name('home');
@@ -17,6 +18,9 @@ Route::get('/brand/{slug}', [LandingController::class, 'brandDetail'])->name('br
 Route::get('/brand/{slug}/portfolio/{portfolio}', [LandingController::class, 'portfolioDetail'])->name('brand.portfolio.detail');
 Route::get('/portfolio', [LandingController::class, 'portfolios'])->name('portfolio');
 Route::get('/join', [LandingController::class, 'join'])->name('join');
+Route::post('/join/apply', [VendorApplicationController::class, 'apply'])
+    ->name('join.apply')
+    ->middleware('throttle:5,1');
 Route::post('/brand/{slug}/track-whatsapp', [BrandAnalyticsController::class, 'trackWhatsapp'])
     ->name('brand.track-whatsapp');
 
@@ -35,6 +39,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('brand-portfolio-images.store');
     Route::delete('brand-portfolios/{brandPortfolioId}/images/{imageId}', [ImagePortfolioController::class, 'destroy'])
         ->name('brand-portfolio-images.destroy');
+
+    // Vendor Applications (admin)
+    Route::get('vendor-applications', [VendorApplicationController::class, 'index'])
+        ->name('vendor-applications.index');
+    Route::get('vendor-applications/{id}', [VendorApplicationController::class, 'show'])
+        ->name('vendor-applications.show');
+    Route::post('vendor-applications/{id}/approve', [VendorApplicationController::class, 'approve'])
+        ->name('vendor-applications.approve');
+    Route::post('vendor-applications/{id}/reject', [VendorApplicationController::class, 'reject'])
+        ->name('vendor-applications.reject');
 
 });
 

@@ -10,71 +10,66 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { useRole } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, KeyIcon, LayoutGrid, User } from 'lucide-react';
+import {
+    BookOpen,
+    CalendarCheck,
+    CalendarDays,
+    ClipboardList,
+    Folder,
+    Heart,
+    KeyIcon,
+    LayoutGrid,
+    MessageSquare,
+    Settings2,
+    ShieldCheck,
+    Star,
+    User,
+    Users,
+} from 'lucide-react';
 import AppLogo from './app-logo';
-import users from '@/routes/users';
-import roles from '@/routes/roles';
-import brands from '@/routes/brands';
-import brandPackages from '@/routes/brand-packages';
-import brandPortfolios from '@/routes/brand-portfolios';
 
 const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
+    { title: 'Dashboard', href: dashboard(), icon: LayoutGrid },
 ];
 
-const userManagement: NavItem[] = [
-    {
-        title: 'Users',
-        href: users.index(),
-        icon: User,
-        permissions: ['users index'],
-    },
-    {
-        title: 'Roles',
-        href: roles.index(),
-        icon: KeyIcon,
-        permissions: ['roles index'],
-    },
+// Admin-only navigation
+const adminUserMgmt: NavItem[] = [
+    { title: 'Users',       href: '/users',  icon: User,   permissions: ['users index'] },
+    { title: 'Roles',       href: '/roles',  icon: KeyIcon, permissions: ['roles index'] },
 ];
 
-const BrandsManagement: NavItem[] = [
-    {
-        title: 'Brands',
-        href: brands.index(),
-        icon: BookOpen,
-        permissions: ['brands index'],
-    },
-    {
-        title: 'Brand Packages',
-        href: brandPackages.index(),
-        icon: Folder,
-        permissions: ['brands packages index'],
-    },
-    {
-        title: 'Brand Portfolios',
-        href: brandPortfolios.index(),
-        icon: Folder,
-        permissions: ['brands portfolios index'],
-    },
-
+const adminBrandMgmt: NavItem[] = [
+    { title: 'Brands',            href: '/brands',               icon: BookOpen, permissions: ['brands index'] },
+    { title: 'Vendor Applications', href: '/vendor-applications', icon: ClipboardList, permissions: ['vendor applications index'] },
+    { title: 'Kategori Layanan',  href: '/service-categories',   icon: Settings2, permissions: ['service categories index'] },
 ];
 
-const footerNavItems: NavItem[] = [
-    // {
-    //     title: 'Repository',
-    //     href: 'https://github.com/laravel/react-starter-kit',
-    //     icon: Folder,
-    // },
+// Vendor-only navigation
+const vendorBrandItems: NavItem[] = [
+    { title: 'Brand Saya',    href: '/brands',            icon: BookOpen,       permissions: ['brands index'] },
+    { title: 'Paket',         href: '/brand-packages',    icon: Folder,         permissions: ['brands packages index'] },
+    { title: 'Portofolio',    href: '/brand-portfolios',  icon: Star,           permissions: ['brands portfolios index'] },
+    { title: 'Testimoni',     href: '/testimonials',      icon: MessageSquare,  permissions: ['testimonials index'] },
+    { title: 'Inquiry / Lead', href: '/inquiries',        icon: ClipboardList,  permissions: ['inquiries index'] },
+    { title: 'Ketersediaan',  href: '/availability',      icon: CalendarCheck,  permissions: ['availability manage'] },
 ];
+
+// Customer-only navigation
+const customerItems: NavItem[] = [
+    { title: 'Favorit',       href: '/favorites',   icon: Heart,         permissions: ['favorites index'] },
+    { title: 'Rencana Acara', href: '/event-plans', icon: CalendarDays,  permissions: ['event plans index'] },
+    { title: 'Inquiry Saya',  href: '/my-inquiries', icon: MessageSquare, permissions: ['inquiries create'] },
+];
+
+const footerNavItems: NavItem[] = [];
 
 export function AppSidebar() {
+    const { isAdmin, isVendor, isUser } = useRole();
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -90,9 +85,22 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain section='Platform' items={mainNavItems} />
-                <NavMain section='User Management' items={userManagement} />
-                <NavMain section='Brands Management' items={BrandsManagement} />
+                <NavMain section="Platform" items={mainNavItems} />
+
+                {isAdmin && (
+                    <>
+                        <NavMain section="User Management" items={adminUserMgmt} />
+                        <NavMain section="Brand Management" items={adminBrandMgmt} />
+                    </>
+                )}
+
+                {isVendor && (
+                    <NavMain section="Brand Saya" items={vendorBrandItems} />
+                )}
+
+                {isUser && (
+                    <NavMain section="Aktivitas Saya" items={customerItems} />
+                )}
             </SidebarContent>
 
             <SidebarFooter>

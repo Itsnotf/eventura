@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\BrandAnalytic;
 use App\Models\BrandPortfolios;
 use App\Models\Brands;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
@@ -139,10 +138,8 @@ class LandingController extends Controller
 
     public function join()
     {
-        $adminEmail = User::role('admin')->value('email') ?? 'admin@eventura.id';
-
         return Inertia::render('landing/join', [
-            'adminEmail' => $adminEmail,
+            'flash' => ['success' => session('success')],
         ]);
     }
 }

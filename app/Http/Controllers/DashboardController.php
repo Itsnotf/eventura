@@ -34,6 +34,7 @@ class DashboardController extends Controller
 
             return Inertia::render('dashboard', [
                 'isAdmin' => true,
+                'role'    => 'admin',
                 'stats' => [
                     'totalBrands'      => Brands::count(),
                     'totalUsers'       => User::count(),
@@ -48,11 +49,19 @@ class DashboardController extends Controller
             ]);
         }
 
+        // Customer dashboard
+        if ($currentUser->hasRole('user')) {
+            return Inertia::render('dashboard', [
+                'role' => 'user',
+            ]);
+        }
+
         $brand = $currentUser->brand;
 
         if (!$brand) {
             return Inertia::render('dashboard', [
                 'isAdmin' => false,
+                'role'    => 'vendor',
                 'brand'   => null,
                 'stats'   => null,
             ]);
@@ -89,6 +98,7 @@ class DashboardController extends Controller
 
         return Inertia::render('dashboard', [
             'isAdmin' => false,
+            'role'    => 'vendor',
             'brand'   => $brand,
             'stats'   => [
                 'totalPackages'    => BrandPackages::where('brand_id', $brandId)->count(),
