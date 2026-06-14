@@ -7,39 +7,44 @@ use App\Models\BrandPortfolios;
 use App\Models\Brands;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 class LandingController extends Controller
 {
     public function home()
     {
-        $minCount = Brands::where('is_active', true)->min('featured_count') ?? 0;
+        $featured = Cache::remember('featured_brands', 600, function () {
+            $minCount = Brands::where('is_active', true)->min('featured_count') ?? 0;
 
-        $featured = Brands::where('is_active', true)
-            ->where('featured_count', $minCount)
-            ->withMin('packages', 'price_start')
-            ->inRandomOrder()
-            ->take(6)
-            ->get();
-
-        if ($featured->count() < 6) {
-            $needed   = 6 - $featured->count();
-            $existing = $featured->pluck('id');
-
-            $more = Brands::where('is_active', true)
-                ->where('featured_count', '>', $minCount)
-                ->whereNotIn('id', $existing)
+            $featured = Brands::where('is_active', true)
+                ->where('featured_count', $minCount)
                 ->withMin('packages', 'price_start')
                 ->inRandomOrder()
-                ->take($needed)
+                ->take(6)
                 ->get();
 
-            $featured = $featured->merge($more);
-        }
+            if ($featured->count() < 6) {
+                $needed   = 6 - $featured->count();
+                $existing = $featured->pluck('id');
 
-        if ($featured->isNotEmpty()) {
-            Brands::whereIn('id', $featured->pluck('id'))->increment('featured_count');
-        }
+                $more = Brands::where('is_active', true)
+                    ->where('featured_count', '>', $minCount)
+                    ->whereNotIn('id', $existing)
+                    ->withMin('packages', 'price_start')
+                    ->inRandomOrder()
+                    ->take($needed)
+                    ->get();
+
+                $featured = $featured->merge($more);
+            }
+
+            if ($featured->isNotEmpty()) {
+                Brands::whereIn('id', $featured->pluck('id'))->increment('featured_count');
+            }
+
+            return $featured;
+        });
 
         return Inertia::render('welcome', [
             'featuredBrands' => $featured,

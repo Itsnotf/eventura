@@ -89,7 +89,7 @@ class BrandPackagesController extends Controller implements HasMiddleware
         $currentUser = $this->getCurrentUser();
 
         if (!$currentUser->hasRole('admin') && $currentUser->brand && $request->brand_id != $currentUser->brand->id) {
-            return redirect()->route('brand-packages.index')->with('success', 'gak boleh nakal yah.');
+            abort(403);
         }
 
         $brandPackage = BrandPackages::create([
@@ -147,8 +147,8 @@ class BrandPackagesController extends Controller implements HasMiddleware
         $currentUser = $this->getCurrentUser();
         $brandPackage = BrandPackages::findOrFail($id);
 
-        if (!$currentUser->hasRole('admin') && $currentUser->brand && $request->brand_id != $currentUser->brand->id) {
-            return redirect()->route('brand-packages.show', $id)->with('success', 'gak boleh nakal yah.');
+        if (!$currentUser->hasRole('admin') && $currentUser->brand && $brandPackage->brand_id != $currentUser->brand->id) {
+            abort(403);
         }
 
         $brandPackage->update([

@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class BrandsController extends Controller implements HasMiddleware
@@ -97,8 +96,19 @@ class BrandsController extends Controller implements HasMiddleware
      */
     public function store(CreateBrandRequest $request)
     {
-        $brand = Brands::create([
-            "user_id" => $request->user_id,
+        $user = $this->getCurrentUser();
+
+        if (!$user->hasRole('admin')) {
+            if ($user->brand) {
+                abort(403, 'Anda sudah memiliki brand.');
+            }
+            $userId = $user->id;
+        } else {
+            $userId = $request->user_id;
+        }
+
+        Brands::create([
+            "user_id" => $userId,
             "name" => $request->name,
             "slug" => $request->slug,
             "category" => $request->category,
@@ -165,8 +175,8 @@ class BrandsController extends Controller implements HasMiddleware
         $user = $this->getCurrentUser();
         $brand = Brands::findOrFail($id);
 
-        if (!$user->hasRole('admin') && $request->user_id != $user->id) {
-            return redirect()->route('brands.show', $id)->with('success', 'gak boleh nakal yah.');
+        if (!$user->hasRole('admin') && $brand->user_id != $user->id) {
+            abort(403);
         }
 
         $brand->update([
