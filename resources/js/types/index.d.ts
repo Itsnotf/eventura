@@ -88,15 +88,16 @@ export interface Brand {
 export interface BrandPackage {
     id: number;
     brand_id: number;
+    service_category_id: number | null;
     name: string;
-    price_start: string;
-    price_end: string;
+    price_start: number;
+    price_end: number;
     description: string;
     cover_image: string | null;
     is_featured: boolean;
     created_at: string;
     updated_at: string;
-    brand : Brand;
+    brand: Brand;
 }
 
 export interface BrandPortfolio {

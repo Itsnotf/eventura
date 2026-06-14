@@ -3,7 +3,7 @@ import { Link } from '@inertiajs/react';
 import { MapPin } from 'lucide-react';
 
 export interface BrandWithStats extends Brand {
-    packages_min_price_start?: string | null;
+    packages_min_price_start?: number | null;
 }
 
 export function formatPrice(price: string | number): string {

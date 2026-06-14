@@ -22,7 +22,9 @@ class BrandPackages extends Model
     protected function casts(): array
     {
         return [
-            'is_featured' => 'boolean',
+            'is_featured'  => 'boolean',
+            'price_start'  => 'integer',
+            'price_end'    => 'integer',
         ];
     }
 
