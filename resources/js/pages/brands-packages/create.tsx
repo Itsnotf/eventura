@@ -12,8 +12,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useState } from 'react';
 
 
+interface ServiceCategory {
+    id: number;
+    name: string;
+}
+
 interface Props {
     brands: Brand[];
+    categories: ServiceCategory[];
 }
 
 
@@ -28,8 +34,9 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function BrandPackageCreatePage({ brands }: Props) {
+export default function BrandPackageCreatePage({ brands, categories }: Props) {
     const [brandId, setBrandId] = useState<string>('');
+    const [categoryId, setCategoryId] = useState<string>('');
     const [packageName, setPackageName] = useState<string>('');
     const [priceStart, setPriceStart] = useState<string>('');
     const [priceEnd, setPriceEnd] = useState<string>('');
@@ -84,6 +91,24 @@ export default function BrandPackageCreatePage({ brands }: Props) {
                                 </Select>
                                 <input type="hidden" name="brand_id" value={brandId} />
                                 <InputError message={errors.brand_id} />
+                            </div>
+
+                            <div className="grid gap-2 md:col-span-1">
+                                <Label htmlFor="service_category_id">Kategori Layanan</Label>
+                                <Select value={categoryId} onValueChange={setCategoryId}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Pilih kategori" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {categories.map((cat) => (
+                                            <SelectItem key={cat.id} value={cat.id.toString()}>
+                                                {cat.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <input type="hidden" name="service_category_id" value={categoryId} />
+                                <InputError message={errors.service_category_id} />
                             </div>
 
                             <div className="grid gap-2 md:col-span-1">

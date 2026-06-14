@@ -10,6 +10,7 @@ class BrandPackages extends Model
     use HasFactory;
     protected $fillable = [
         'brand_id',
+        'service_category_id',
         'name',
         'price_start',
         'price_end',
@@ -28,5 +29,10 @@ class BrandPackages extends Model
     public function brand()
     {
         return $this->belongsTo(Brands::class, 'brand_id', 'id');
+    }
+
+    public function serviceCategory()
+    {
+        return $this->belongsTo(ServiceCategories::class, 'service_category_id', 'id');
     }
 }

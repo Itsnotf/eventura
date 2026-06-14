@@ -22,13 +22,14 @@ class UpdateBrandPackagesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'brand_id' => 'required|integer|exists:brands,id',
-            'name' => 'required|string|max:255',
-            'price_start' => 'required|string|max:255',
-            'price_end' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'is_featured' => 'nullable|boolean',
+            'brand_id'            => 'required|integer|exists:brands,id',
+            'service_category_id' => 'required|integer|exists:service_categories,id',
+            'name'                => 'required|string|max:255',
+            'price_start'         => 'required|integer|min:0',
+            'price_end'           => 'required|integer|min:0|gte:price_start',
+            'description'         => 'nullable|string',
+            'cover_image'         => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'is_featured'         => 'nullable|boolean',
         ];
     }
 }

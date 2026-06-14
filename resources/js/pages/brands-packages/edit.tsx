@@ -12,14 +12,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useState } from 'react';
 
 
+interface ServiceCategory {
+    id: number;
+    name: string;
+}
+
 interface Props {
-    brandPackage: BrandPackage;
+    brandPackage: BrandPackage & { service_category_id?: number | null };
     brands: Brand[];
+    categories: ServiceCategory[];
 }
 
 
-export default function BrandPackageEditPage({ brandPackage, brands }: Props) {
+export default function BrandPackageEditPage({ brandPackage, brands, categories }: Props) {
     const [brandId, setBrandId] = useState<string>(brandPackage.brand_id.toString());
+    const [categoryId, setCategoryId] = useState<string>(brandPackage.service_category_id?.toString() ?? '');
     const [packageName, setPackageName] = useState<string>(brandPackage.name);
     const [priceStart, setPriceStart] = useState<string>(brandPackage.price_start);
     const [priceEnd, setPriceEnd] = useState<string>(brandPackage.price_end);
@@ -58,11 +65,29 @@ export default function BrandPackageEditPage({ brandPackage, brands }: Props) {
                             {/* Hidden inputs for method spoofing and data submission */}
                             <input type="hidden" name="_method" value="PUT" />
                             <input type="hidden" name="brand_id" value={brandId} />
+                            <input type="hidden" name="service_category_id" value={categoryId} />
                             <input type="hidden" name="name" value={packageName} />
                             <input type="hidden" name="price_start" value={priceStart} />
                             <input type="hidden" name="price_end" value={priceEnd} />
                             <input type="hidden" name="description" value={description} />
                             <input type="hidden" name="is_featured" value={isFeatured ? '1' : '0'} />
+
+                            <div className="grid gap-2 md:col-span-1">
+                                <Label htmlFor="service_category_id">Kategori Layanan</Label>
+                                <Select value={categoryId} onValueChange={setCategoryId}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Pilih kategori" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {categories.map((cat) => (
+                                            <SelectItem key={cat.id} value={cat.id.toString()}>
+                                                {cat.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <InputError message={errors.service_category_id} />
+                            </div>
 
                             <div className="grid gap-2 md:col-span-1">
                                 <Label htmlFor="brand_id">Select Brand</Label>

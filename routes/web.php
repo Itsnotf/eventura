@@ -9,6 +9,7 @@ use App\Http\Controllers\ImagePortfolioController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ServiceCategoriesController;
 use App\Http\Controllers\VendorApplicationController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,6 +40,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('brand-portfolio-images.store');
     Route::delete('brand-portfolios/{brandPortfolioId}/images/{imageId}', [ImagePortfolioController::class, 'destroy'])
         ->name('brand-portfolio-images.destroy');
+
+    // Service Categories (admin)
+    Route::resource('service-categories', ServiceCategoriesController::class)->except(['show']);
 
     // Vendor Applications (admin)
     Route::get('vendor-applications', [VendorApplicationController::class, 'index'])

@@ -6,6 +6,7 @@ use App\Http\Requests\BrandPackagesRequest\CreateBrandPackagesRequest;
 use App\Http\Requests\BrandPackagesRequest\UpdateBrandPackagesRequest;
 use App\Models\BrandPackages;
 use App\Models\Brands;
+use App\Models\ServiceCategories;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -77,7 +78,8 @@ class BrandPackagesController extends Controller implements HasMiddleware
             : Brands::where('user_id', $currentUser->id)->get();
 
         return Inertia::render("brands-packages/create", [
-            'brands' => $brands,
+            'brands'     => $brands,
+            'categories' => ServiceCategories::orderBy('name')->get(),
         ]);
     }
 
@@ -92,14 +94,15 @@ class BrandPackagesController extends Controller implements HasMiddleware
             abort(403);
         }
 
-        $brandPackage = BrandPackages::create([
-            'brand_id' => $request->brand_id,
-            'name' => $request->name,
-            'price_start' => $request->price_start,
-            'price_end' => $request->price_end,
-            'description' => $request->description,
-            'cover_image' => $request->cover_image ? $request->file('cover_image')->store('brand_packages', 'public') : null,
-            'is_featured' => $request->is_featured ?? false,
+        BrandPackages::create([
+            'brand_id'            => $request->brand_id,
+            'service_category_id' => $request->service_category_id,
+            'name'                => $request->name,
+            'price_start'         => $request->price_start,
+            'price_end'           => $request->price_end,
+            'description'         => $request->description,
+            'cover_image'         => $request->cover_image ? $request->file('cover_image')->store('brand_packages', 'public') : null,
+            'is_featured'         => $request->is_featured ?? false,
         ]);
 
         return redirect()->route('brand-packages.index')->with('success', 'Brand package created successfully.');
@@ -135,7 +138,8 @@ class BrandPackagesController extends Controller implements HasMiddleware
 
         return Inertia::render('brands-packages/edit', [
             'brandPackage' => $brandPackage,
-            'brands' => $brands,
+            'brands'       => $brands,
+            'categories'   => ServiceCategories::orderBy('name')->get(),
         ]);
     }
 
@@ -152,13 +156,14 @@ class BrandPackagesController extends Controller implements HasMiddleware
         }
 
         $brandPackage->update([
-            'brand_id' => $request->brand_id,
-            'name' => $request->name,
-            'price_start' => $request->price_start,
-            'price_end' => $request->price_end,
-            'description' => $request->description,
-            'cover_image' => $request->cover_image ? $request->file('cover_image')->store('brand_packages', 'public') : $brandPackage->cover_image,
-            'is_featured' => $request->is_featured ?? false,
+            'brand_id'            => $request->brand_id,
+            'service_category_id' => $request->service_category_id,
+            'name'                => $request->name,
+            'price_start'         => $request->price_start,
+            'price_end'           => $request->price_end,
+            'description'         => $request->description,
+            'cover_image'         => $request->cover_image ? $request->file('cover_image')->store('brand_packages', 'public') : $brandPackage->cover_image,
+            'is_featured'         => $request->is_featured ?? false,
         ]);
 
         return redirect()->route('brand-packages.index')->with('success', 'Brand package updated successfully.');
