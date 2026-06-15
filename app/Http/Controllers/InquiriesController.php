@@ -19,7 +19,8 @@ class InquiriesController extends Controller implements HasMiddleware
         return [
             new Middleware('auth'),
             new Middleware('permission:inquiries create', only: ['store']),
-            new Middleware('permission:inquiries index', only: ['index', 'myInquiries']),
+            new Middleware('permission:inquiries index', only: ['index']),
+            new Middleware('permission:inquiries create', only: ['myInquiries']),
             new Middleware('permission:inquiries show', only: ['show']),
             new Middleware('permission:inquiries update', only: ['updateStatus']),
         ];

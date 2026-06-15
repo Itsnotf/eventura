@@ -109,7 +109,9 @@ class LandingController extends Controller
 
         return Inertia::render('landing/explore', [
             'brands'  => $brands,
-            'filters' => $request->only(['search', 'category', 'city', 'verified', 'min_price', 'max_price', 'min_rating', 'sort']),
+            // Cast to object so empty result serializes as {} not [] in JSON.
+            // [] (PHP empty array) → "[]" (JSON array) → filters.sort resolves to Array.prototype.sort → useState crash.
+            'filters' => (object) $request->only(['search', 'category', 'city', 'verified', 'min_price', 'max_price', 'min_rating', 'sort']),
         ]);
     }
 

@@ -93,14 +93,19 @@ function CompareBar({ brands, onRemove, onClear }: {
 }
 
 export default function ExplorePage({ brands, filters }: Props) {
-    const [search, setSearch] = useState(filters.search ?? '');
-    const [category, setCategory] = useState(filters.category ?? '');
-    const [city, setCity] = useState(filters.city ?? '');
-    const [verified, setVerified] = useState(filters.verified ?? '');
-    const [minPrice, setMinPrice] = useState(filters.min_price ?? '');
-    const [maxPrice, setMaxPrice] = useState(filters.max_price ?? '');
-    const [minRating, setMinRating] = useState(filters.min_rating ?? '');
-    const [sort, setSort] = useState(filters.sort ?? 'latest');
+    // Guard: PHP sends [] (JSON array) when no filters are set. An array inherits
+    // Array.prototype.sort, so filters.sort resolves to a function, not a string.
+    // useState(fn) treats it as a lazy initialiser → crash. Always treat as object.
+    const f: Filters = Array.isArray(filters) ? {} : filters;
+
+    const [search, setSearch] = useState(f.search ?? '');
+    const [category, setCategory] = useState(f.category ?? '');
+    const [city, setCity] = useState(f.city ?? '');
+    const [verified, setVerified] = useState(f.verified ?? '');
+    const [minPrice, setMinPrice] = useState(f.min_price ?? '');
+    const [maxPrice, setMaxPrice] = useState(f.max_price ?? '');
+    const [minRating, setMinRating] = useState(f.min_rating ?? '');
+    const [sort, setSort] = useState(f.sort ?? 'latest');
     const [showFilters, setShowFilters] = useState(false);
     const [compareList, setCompareList] = useState<BrandWithStats[]>([]);
 

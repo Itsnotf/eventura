@@ -14,10 +14,12 @@ class RoleSeeder extends Seeder
         $vendor = Role::firstOrCreate(['name' => 'vendor', 'guard_name' => 'web']);
         $user   = Role::firstOrCreate(['name' => 'user',   'guard_name' => 'web']);
 
-        // Admin gets all permissions via Gate::before — no explicit grant needed.
+        // Admin gets ALL permissions explicitly so hasAnyPermission() works on the frontend.
+        $admin->syncPermissions(Permission::all());
+
         // Vendor permissions
         $vendorPermissions = [
-            'brands index', 'brands edit', 'brands show',
+            'brands index', 'brands create', 'brands edit', 'brands show',
             'brands packages index', 'brands packages create', 'brands packages edit',
             'brands packages delete', 'brands packages show',
             'brands portfolios index', 'brands portfolios create', 'brands portfolios edit',
@@ -34,6 +36,8 @@ class RoleSeeder extends Seeder
             'event plans index', 'event plans create', 'event plans edit', 'event plans delete',
             'inquiries create',
         ];
+
+
 
         $vendor->syncPermissions(Permission::whereIn('name', $vendorPermissions)->get());
         $user->syncPermissions(Permission::whereIn('name', $userPermissions)->get());

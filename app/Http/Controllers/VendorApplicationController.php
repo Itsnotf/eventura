@@ -77,6 +77,7 @@ class VendorApplicationController extends Controller implements HasMiddleware
     {
         $application = VendorApplications::findOrFail($id);
 
+
         if ($application->status !== 'pending') {
             return back()->with('error', 'Aplikasi ini sudah diproses.');
         }
@@ -101,6 +102,7 @@ class VendorApplicationController extends Controller implements HasMiddleware
                 'category'    => [$application->category],
                 'description' => '',
                 'address'     => '',
+                'whatsapp_number' => $application->phone,
                 'is_active'   => true,
                 'is_verified' => true,
                 'verified_at' => now(),

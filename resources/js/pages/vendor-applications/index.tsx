@@ -43,11 +43,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function VendorApplicationsIndex({ applications, filters, flash }: Props) {
-    const [status, setStatus] = useState(filters.status ?? '');
+    const [status, setStatus] = useState(filters.status ?? 'all');
 
     function applyFilter(newStatus: string) {
         setStatus(newStatus);
-        router.get('/vendor-applications', newStatus ? { status: newStatus } : {}, { preserveState: true });
+        router.get('/vendor-applications', newStatus !== 'all' ? { status: newStatus } : {}, { preserveState: true });
     }
 
     return (
@@ -71,7 +71,7 @@ export default function VendorApplicationsIndex({ applications, filters, flash }
                             <SelectValue placeholder="Filter status" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="">Semua</SelectItem>
+                            <SelectItem value="all">Semua</SelectItem>
                             <SelectItem value="pending">Pending</SelectItem>
                             <SelectItem value="approved">Approved</SelectItem>
                             <SelectItem value="rejected">Rejected</SelectItem>
