@@ -17,11 +17,22 @@ class Inquiries extends Model
         'message',
         'status',
         'vendor_note',
+        'read_at',
+        'vendor_response',
+        'responded_at',
+        'is_archived',
+        'closed_at',
     ];
 
     protected function casts(): array
     {
-        return ['event_date' => 'date'];
+        return [
+            'event_date'   => 'date',
+            'read_at'      => 'datetime',
+            'responded_at' => 'datetime',
+            'closed_at'    => 'datetime',
+            'is_archived'  => 'boolean',
+        ];
     }
 
     public function user()

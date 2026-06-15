@@ -127,15 +127,24 @@ class LandingController extends Controller
 
         BrandAnalytic::record($brand->id, BrandAnalytic::PROFILE_VIEW);
 
-        $testimonials = Testimonials::with('user:id,name')
-            ->where('brand_id', $brand->id)
+        // Rata-rata & jumlah dari SEMUA testimoni (A2) — kurasi hanya kontrol tampilan teks
+        $allTestimonials = Testimonials::where('brand_id', $brand->id)->get(['rating', 'is_published', 'user_id', 'body', 'published_at', 'id', 'brand_id']);
+        $avgRating = $allTestimonials->isNotEmpty()
+            ? round($allTestimonials->avg('rating'), 1)
+            : null;
+        $reviewsCount = $allTestimonials->count();
+
+        $testimonials = $allTestimonials
             ->where('is_published', true)
+            ->sortByDesc('published_at')
+            ->values();
+
+        // Eager-load user names for published ones
+        $publishedIds = $testimonials->pluck('id');
+        $testimonials = Testimonials::with('user:id,name')
+            ->whereIn('id', $publishedIds)
             ->latest('published_at')
             ->get(['id', 'brand_id', 'user_id', 'rating', 'body', 'published_at']);
-
-        $avgRating = $testimonials->isNotEmpty()
-            ? round($testimonials->avg('rating'), 1)
-            : null;
 
         $userId = Auth::id();
 
@@ -157,6 +166,7 @@ class LandingController extends Controller
             'brand'              => $brand,
             'testimonials'       => $testimonials,
             'avgRating'          => $avgRating,
+            'reviewsCount'       => $reviewsCount,
             'userHasTestimonial' => $userHasTestimonial,
             'userEventPlans'     => $userEventPlans,
             'unavailableDates'   => $unavailableDates,

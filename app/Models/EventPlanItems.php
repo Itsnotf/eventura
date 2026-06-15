@@ -13,14 +13,18 @@ class EventPlanItems extends Model
         'brand_id',
         'brand_package_id',
         'service_category_id',
-        'price_snapshot',
+        'price_start_snapshot',
+        'price_end_snapshot',
         'package_name_snapshot',
         'brand_name_snapshot',
     ];
 
     protected function casts(): array
     {
-        return ['price_snapshot' => 'integer'];
+        return [
+            'price_start_snapshot' => 'integer',
+            'price_end_snapshot'   => 'integer',
+        ];
     }
 
     public function eventPlan()

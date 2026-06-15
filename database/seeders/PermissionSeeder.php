@@ -52,6 +52,9 @@ class PermissionSeeder extends Seeder
 
             // Vendor: availability
             'availability manage',
+
+            // Admin: pengaturan situs (Tentang & Kontak)
+            'site settings index', 'site settings edit',
         ];
 
         foreach ($permissions as $permission) {

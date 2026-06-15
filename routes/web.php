@@ -66,7 +66,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('my-inquiries', [InquiriesController::class, 'myInquiries'])->name('inquiries.mine');
     Route::get('inquiries', [InquiriesController::class, 'index'])->name('inquiries.index');
     Route::get('inquiries/{id}', [InquiriesController::class, 'show'])->name('inquiries.show');
-    Route::patch('inquiries/{id}/status', [InquiriesController::class, 'updateStatus'])->name('inquiries.update-status');
+    Route::post('inquiries/{id}/respond', [InquiriesController::class, 'respond'])->name('inquiries.respond');
+    Route::post('inquiries/{id}/archive', [InquiriesController::class, 'archive'])->name('inquiries.archive');
+    Route::post('inquiries/{id}/unarchive', [InquiriesController::class, 'unarchive'])->name('inquiries.unarchive');
+    Route::post('inquiries/{id}/close', [InquiriesController::class, 'close'])->name('inquiries.close');
 
     // Availability
     Route::get('availability', [AvailabilityController::class, 'index'])->name('availability.index');

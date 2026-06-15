@@ -9,51 +9,44 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
+        // ── Admin ───────────────────────────────────────────────
         $admin = User::firstOrCreate(
             ['email' => 'admin@gmail.com'],
-            [
-                'name'              => 'Admin',
-                'password'          => 'password',
-                'email_verified_at' => now(),
-            ]
+            ['name' => 'Admin Eventura', 'password' => 'password', 'email_verified_at' => now()]
         );
         $admin->syncRoles(['admin']);
 
-        // Brand owners are vendors
-        $brandOwners = [
-            ['name' => 'Rina Wijayanti',   'email' => 'rina@mahkotabridal.id'],
-            ['name' => 'Budi Santoso',      'email' => 'budi@nuansaeventpro.id'],
-            ['name' => 'Sari Permatasari',  'email' => 'sari@permatawedding.id'],
-            ['name' => 'Dian Kusuma',       'email' => 'dian@galaevent.id'],
-            ['name' => 'Agus Setiawan',     'email' => 'agus@eleganbali.id'],
-            ['name' => 'Maya Putri',        'email' => 'maya@proeventindonesia.id'],
-            ['name' => 'Hendra Prasetya',   'email' => 'hendra@bungarayawedding.id'],
-            ['name' => 'Dewi Anggraini',    'email' => 'dewi@spektraevents.id'],
-            ['name' => 'Rudi Hartono',      'email' => 'rudi@harmoniwedding.id'],
-            ['name' => 'Lia Novitasari',    'email' => 'lia@summitevent.id'],
+        // ── Vendor (pemilik 7 brand) ────────────────────────────
+        $vendors = [
+            ['name' => 'Dinar Maheswari', 'email' => 'dinar@dinarwo.id'],
+            ['name' => 'Lumina Sari',     'email' => 'lumina@luminawo.id'],
+            ['name' => 'Nisa Rahmadani',  'email' => 'needs@needswo.id'],
+            ['name' => 'Mikael Joshua',   'email' => 'mj@mjstoria.id'],
+            ['name' => 'Rara Anjani',     'email' => 'hello@benangmerah.id'],
+            ['name' => 'Reza Mahendra',   'email' => 'reza@marsproduction.id'],
+            ['name' => 'Gede Adnyana',    'email' => 'gede@endlessproduction.id'],
         ];
-
-        foreach ($brandOwners as $owner) {
-            $user = User::firstOrCreate(
-                ['email' => $owner['email']],
-                [
-                    'name'              => $owner['name'],
-                    'password'          => 'password',
-                    'email_verified_at' => now(),
-                ]
+        foreach ($vendors as $v) {
+            $u = User::firstOrCreate(
+                ['email' => $v['email']],
+                ['name' => $v['name'], 'password' => 'password', 'email_verified_at' => now()]
             );
-            $user->syncRoles(['vendor']);
+            $u->syncRoles(['vendor']);
         }
 
-        // Demo customer account
-        $customer = User::firstOrCreate(
-            ['email' => 'customer@gmail.com'],
-            [
-                'name'              => 'Demo Customer',
-                'password'          => 'password',
-                'email_verified_at' => now(),
-            ]
-        );
-        $customer->syncRoles(['user']);
+        // ── Customer (pelanggan) ────────────────────────────────
+        $customers = [
+            ['name' => 'Demo Customer', 'email' => 'customer@gmail.com'],
+            ['name' => 'Aulia Putri',   'email' => 'aulia@example.com'],
+            ['name' => 'Bagas Pratama', 'email' => 'bagas@example.com'],
+            ['name' => 'Citra Lestari', 'email' => 'citra@example.com'],
+        ];
+        foreach ($customers as $c) {
+            $u = User::firstOrCreate(
+                ['email' => $c['email']],
+                ['name' => $c['name'], 'password' => 'password', 'email_verified_at' => now()]
+            );
+            $u->syncRoles(['user']);
+        }
     }
 }

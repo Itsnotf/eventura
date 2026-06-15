@@ -22,7 +22,7 @@ class BrandsController extends Controller implements HasMiddleware
             new Middleware('permission:brands edit', only: ['edit', 'update']),
             new Middleware('permission:brands delete', only: ['destroy']),
             new Middleware('permission:brands show', only: ['show']),
-            new Middleware('permission:brands edit', only: ['verify', 'unverify']),
+            new Middleware('permission:brands verify', only: ['verify', 'unverify']),
         ];
     }
 

@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Brands;
-use App\Models\EventPlans;
 use App\Models\Inquiries;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -22,7 +20,8 @@ class InquiriesController extends Controller implements HasMiddleware
             new Middleware('permission:inquiries index', only: ['index']),
             new Middleware('permission:inquiries create', only: ['myInquiries']),
             new Middleware('permission:inquiries show', only: ['show']),
-            new Middleware('permission:inquiries update', only: ['updateStatus']),
+            new Middleware('permission:inquiries update', only: ['respond', 'archive', 'unarchive']),
+            // close hanya butuh auth + cek kepemilikan (customer action)
         ];
     }
 
@@ -59,8 +58,8 @@ class InquiriesController extends Controller implements HasMiddleware
         ]);
     }
 
-    /** Vendor: inbox — all inquiries to their brand */
-    public function index()
+    /** Vendor: inbox — all inquiries to their brand (non-archived by default) */
+    public function index(Request $request)
     {
         $user  = User::with('brand')->find(Auth::id());
         $brand = $user?->brand;
@@ -69,18 +68,23 @@ class InquiriesController extends Controller implements HasMiddleware
             abort(403);
         }
 
-        $inquiries = Inquiries::with(['user', 'eventPlan'])
-            ->where('brand_id', $brand->id)
-            ->latest()
-            ->paginate(20);
+        $query = Inquiries::with(['user', 'eventPlan'])
+            ->where('brand_id', $brand->id);
+
+        if (!$request->boolean('archived')) {
+            $query->where('is_archived', false);
+        }
+
+        $inquiries = $query->latest()->paginate(20);
 
         return Inertia::render('inquiries/index', [
-            'inquiries' => $inquiries,
-            'flash'     => ['success' => session('success')],
+            'inquiries'    => $inquiries,
+            'showArchived' => $request->boolean('archived'),
+            'flash'        => ['success' => session('success')],
         ]);
     }
 
-    /** Vendor: view single inquiry */
+    /** Vendor: view single inquiry — auto-marks as read */
     public function show(string $id)
     {
         $user  = User::with('brand')->find(Auth::id());
@@ -92,23 +96,22 @@ class InquiriesController extends Controller implements HasMiddleware
             abort(403);
         }
 
-        // Mark as read
+        // Auto-mark as read on first open (event-driven)
         if ($inquiry->status === 'pending') {
-            $inquiry->update(['status' => 'read']);
+            $inquiry->update(['status' => 'read', 'read_at' => now()]);
         }
 
         return Inertia::render('inquiries/show', [
-            'inquiry' => $inquiry,
+            'inquiry' => $inquiry->fresh(['user', 'brand', 'eventPlan.items.serviceCategory']),
             'flash'   => ['success' => session('success')],
         ]);
     }
 
-    /** Vendor: update status / add note */
-    public function updateStatus(Request $request, string $id)
+    /** Vendor: send a real response — sets status to responded */
+    public function respond(Request $request, string $id)
     {
         $data = $request->validate([
-            'status'      => ['required', 'in:pending,read,responded,closed'],
-            'vendor_note' => ['nullable', 'string', 'max:2000'],
+            'vendor_response' => ['required', 'string', 'min:5', 'max:3000'],
         ]);
 
         $user  = User::with('brand')->find(Auth::id());
@@ -120,8 +123,60 @@ class InquiriesController extends Controller implements HasMiddleware
             abort(403);
         }
 
-        $inquiry->update($data);
+        $inquiry->update([
+            'vendor_response' => $data['vendor_response'],
+            'status'          => 'responded',
+            'responded_at'    => now(),
+        ]);
 
-        return back()->with('success', 'Status inquiry diperbarui.');
+        return back()->with('success', 'Balasan berhasil dikirim.');
+    }
+
+    /** Vendor: archive for inbox tidying — does NOT change visible status */
+    public function archive(string $id)
+    {
+        $user  = User::with('brand')->find(Auth::id());
+        $brand = $user?->brand;
+
+        $inquiry = Inquiries::findOrFail($id);
+
+        if (!$user->hasRole('admin') && (!$brand || $inquiry->brand_id !== $brand->id)) {
+            abort(403);
+        }
+
+        $inquiry->update(['is_archived' => true]);
+
+        return back()->with('success', 'Inquiry diarsipkan.');
+    }
+
+    /** Vendor: unarchive */
+    public function unarchive(string $id)
+    {
+        $user  = User::with('brand')->find(Auth::id());
+        $brand = $user?->brand;
+
+        $inquiry = Inquiries::findOrFail($id);
+
+        if (!$user->hasRole('admin') && (!$brand || $inquiry->brand_id !== $brand->id)) {
+            abort(403);
+        }
+
+        $inquiry->update(['is_archived' => false]);
+
+        return back()->with('success', 'Inquiry dipindahkan ke inbox.');
+    }
+
+    /** Customer: close own inquiry */
+    public function close(string $id)
+    {
+        $inquiry = Inquiries::findOrFail($id);
+
+        if ($inquiry->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $inquiry->update(['status' => 'closed', 'closed_at' => now()]);
+
+        return back()->with('success', 'Inquiry ditutup.');
     }
 }

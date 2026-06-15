@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -59,5 +60,23 @@ class Brands extends Model
     public function favoritedByUsers()
     {
         return $this->hasMany(Favorites::class, 'brand_id');
+    }
+
+    // Rata-rata dari SEMUA testimoni (published maupun tidak) — A2
+    public function averageRating(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->testimonials->isNotEmpty()
+                ? round($this->testimonials->avg('rating'), 1)
+                : null
+        );
+    }
+
+    // Jumlah SEMUA testimoni — A2
+    public function reviewsCount(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->testimonials->count()
+        );
     }
 }

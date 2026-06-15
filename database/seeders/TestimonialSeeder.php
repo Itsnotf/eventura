@@ -11,44 +11,43 @@ class TestimonialSeeder extends Seeder
 {
     public function run(): void
     {
-        $customer = User::where('email', 'customer@gmail.com')->first();
+        $u = fn (string $email) => User::where('email', $email)->value('id');
+        $b = fn (string $slug)  => Brands::where('slug', $slug)->value('id');
 
-        if (!$customer) {
-            return;
-        }
+        // [brand-slug, customer-email, rating, body, is_published]
+        $rows = [
+            // Dinar: 5 (tampil) + 3 (disembunyikan) → rata-rata SEMUA = 4.0
+            ['dinar-wedding-organizer', 'aulia@example.com', 5, 'Koordinasi hari-H sangat rapi, semua sesuai rencana. Sangat direkomendasikan!', true],
+            ['dinar-wedding-organizer', 'bagas@example.com', 3, 'Hasil bagus tapi komunikasi di awal agak lambat.', false],
 
-        $samples = [
-            [
-                'slug'   => 'mahkota-bridal-event',
-                'rating' => 5,
-                'body'   => 'Pelayanannya sangat profesional dan detail. Tim Mahkota Bridal benar-benar membuat hari pernikahan kami menjadi sempurna. Sangat direkomendasikan!',
-            ],
-            [
-                'slug'   => 'nuansa-event-pro',
-                'rating' => 4,
-                'body'   => 'Dekorasi sangat sesuai konsep yang kami minta. Komunikasi tim lancar dan responsif. Hanya ada sedikit keterlambatan di hari H, tapi semuanya berjalan dengan baik.',
-            ],
-            [
-                'slug'   => 'permata-wedding-organizer',
-                'rating' => 5,
-                'body'   => 'Luar biasa! Semua detail diperhatikan dengan sangat teliti. Tamu undangan pun memuji keindahan dekorasi dan kelancaran acara. Terima kasih Permata Wedding!',
-            ],
+            ['lumina-wedding-organizer', 'citra@example.com', 5, 'Dekorasinya cantik banget dan timnya ramah. Tamu pada memuji.', true],
+            ['lumina-wedding-organizer', 'aulia@example.com', 4, 'Overall memuaskan, hiburannya seru.', true],
+
+            ['needs-wedding-organizer', 'bagas@example.com', 4, 'Fleksibel dengan budget kami, hasilnya tetap rapi.', true],
+
+            ['mj-storia', 'citra@example.com', 5, 'Video sinematiknya bikin nangis, benar-benar nangkep momen.', true],
+            ['mj-storia', 'aulia@example.com', 5, 'Fotonya estetik dan pengerjaan cepat.', true],
+            ['mj-storia', 'customer@gmail.com', 2, 'Beberapa file menyusul agak lama dari janji.', false],
+
+            ['benang-merah', 'aulia@example.com', 4, 'Dekorasi sesuai konsep, detailnya rapi.', true],
+
+            ['mars-production', 'bagas@example.com', 5, 'Sound & lighting event kantor kami sangat profesional.', true],
+
+            ['endless-production', 'citra@example.com', 4, 'Dokumentasi pantai hasilnya keren, timnya sigap.', true],
         ];
 
-        foreach ($samples as $s) {
-            $brand = Brands::where('slug', $s['slug'])->first();
-
-            if (!$brand) {
-                continue;
-            }
+        foreach ($rows as [$slug, $email, $rating, $body, $published]) {
+            $brandId = $b($slug);
+            $userId  = $u($email);
+            if (!$brandId || !$userId) continue;
 
             Testimonials::firstOrCreate(
-                ['brand_id' => $brand->id, 'user_id' => $customer->id],
+                ['brand_id' => $brandId, 'user_id' => $userId],
                 [
-                    'rating'       => $s['rating'],
-                    'body'         => $s['body'],
-                    'is_published' => true,
-                    'published_at' => now()->subDays(rand(5, 30)),
+                    'rating'       => $rating,
+                    'body'         => $body,
+                    'is_published' => $published,
+                    'published_at' => $published ? now() : null,
                 ]
             );
         }
