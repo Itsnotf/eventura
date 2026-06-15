@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Favorites;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -52,6 +53,9 @@ class HandleInertiaRequests extends Middleware
                     'created_at' => $permission->created_at,
                     'updated_at' => $permission->updated_at,
                 ]) : [],
+                'favorite_brand_ids' => $request->user()
+                    ? Favorites::where('user_id', $request->user()->id)->pluck('brand_id')
+                    : [],
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];

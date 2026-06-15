@@ -11,8 +11,8 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import hasAnyPermission from '@/lib/utils';
 import { Brand, BreadcrumbItem, SharedData } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
-import { Edit2Icon, Eye, Globe, Instagram, MapPin, Phone } from 'lucide-react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { BadgeCheck, Edit2Icon, Eye, Globe, Instagram, MapPin, Phone, ShieldOff } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -74,20 +74,20 @@ export default function BrandShowPage({
                 {/* Header Section */}
                 <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
                     <div className="flex-1">
-                        <div className="mb-2 flex items-center gap-3">
+                        <div className="mb-2 flex items-center gap-3 flex-wrap">
                             <h1 className="text-3xl font-bold">{brand.name}</h1>
                             <Badge
-                                variant={
-                                    brand.is_active ? 'default' : 'secondary'
-                                }
-                                className={
-                                    brand.is_active
-                                        ? 'bg-green-600'
-                                        : 'bg-red-600'
-                                }
+                                variant={brand.is_active ? 'default' : 'secondary'}
+                                className={brand.is_active ? 'bg-green-600' : 'bg-red-600'}
                             >
                                 {brand.is_active ? 'Active' : 'Inactive'}
                             </Badge>
+                            {brand.is_verified && (
+                                <Badge className="bg-blue-600 gap-1">
+                                    <BadgeCheck className="h-3.5 w-3.5" />
+                                    Terverifikasi
+                                </Badge>
+                            )}
                         </div>
                         <p className="text-sm text-gray-500">
                             Slug:{' '}
@@ -96,7 +96,31 @@ export default function BrandShowPage({
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap">
+                        {hasAnyPermission(['brands edit']) && (
+                            <>
+                                {brand.is_verified ? (
+                                    <Button
+                                        variant="outline"
+                                        className="hover:border-red-300 hover:bg-red-50 hover:text-red-600"
+                                        onClick={() => router.post(`/brands/${brand.id}/unverify`)}
+                                    >
+                                        <ShieldOff className="mr-2 h-4 w-4" />
+                                        Cabut Verifikasi
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        variant="outline"
+                                        className="hover:border-green-300 hover:bg-green-50 hover:text-green-600"
+                                        onClick={() => router.post(`/brands/${brand.id}/verify`)}
+                                    >
+                                        <BadgeCheck className="mr-2 h-4 w-4" />
+                                        Verifikasi Brand
+                                    </Button>
+                                )}
+                            </>
+                        )}
+
                         {hasAnyPermission(['brands edit']) && (
                             <Tooltip>
                                 <TooltipTrigger>

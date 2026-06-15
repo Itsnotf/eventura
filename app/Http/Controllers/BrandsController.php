@@ -22,6 +22,7 @@ class BrandsController extends Controller implements HasMiddleware
             new Middleware('permission:brands edit', only: ['edit', 'update']),
             new Middleware('permission:brands delete', only: ['destroy']),
             new Middleware('permission:brands show', only: ['show']),
+            new Middleware('permission:brands edit', only: ['verify', 'unverify']),
         ];
     }
 
@@ -206,5 +207,23 @@ class BrandsController extends Controller implements HasMiddleware
         $brand->delete();
 
         return redirect()->route('brands.index')->with('success', 'Brand deleted successfully.');
+    }
+
+    /** Admin: mark brand as verified */
+    public function verify(string $id)
+    {
+        $brand = Brands::findOrFail($id);
+        $brand->update(['is_verified' => true, 'verified_at' => now()]);
+
+        return back()->with('success', 'Brand berhasil diverifikasi.');
+    }
+
+    /** Admin: remove verification badge */
+    public function unverify(string $id)
+    {
+        $brand = Brands::findOrFail($id);
+        $brand->update(['is_verified' => false, 'verified_at' => null]);
+
+        return back()->with('success', 'Verifikasi brand dicabut.');
     }
 }

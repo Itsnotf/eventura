@@ -5,6 +5,7 @@ export interface Auth {
     user: User;
     roles: string[];
     permissions: Permission[];
+    favorite_brand_ids: number[];
 }
 
 export interface BreadcrumbItem {
@@ -78,6 +79,8 @@ export interface Brand {
     instagram: string | null;
     website: string | null;
     is_active: boolean;
+    is_verified: boolean;
+    verified_at: string | null;
     created_at: string;
     updated_at: string;
     user?: User;

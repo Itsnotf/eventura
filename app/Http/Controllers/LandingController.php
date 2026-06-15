@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\BrandAnalytic;
 use App\Models\BrandPortfolios;
+use App\Models\BrandUnavailableDates;
 use App\Models\Brands;
+use App\Models\EventPlans;
+use App\Models\Testimonials;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
@@ -53,7 +57,8 @@ class LandingController extends Controller
     public function explore(Request $request)
     {
         $query = Brands::where('is_active', true)
-            ->withMin('packages', 'price_start');
+            ->withMin('packages', 'price_start')
+            ->withAvg('testimonials', 'rating');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -67,11 +72,44 @@ class LandingController extends Controller
             $query->whereJsonContains('category', $request->category);
         }
 
-        $brands = $query->latest()->paginate(12)->withQueryString();
+        if ($request->filled('city')) {
+            $query->where('address', 'like', '%' . $request->city . '%');
+        }
+
+        if ($request->filled('verified') && $request->verified === '1') {
+            $query->where('is_verified', true);
+        }
+
+        if ($request->filled('min_price')) {
+            $query->whereHas('packages', fn($q) => $q->where('price_start', '>=', (int) $request->min_price));
+        }
+
+        if ($request->filled('max_price')) {
+            $query->whereHas('packages', fn($q) => $q->where('price_start', '<=', (int) $request->max_price));
+        }
+
+        if ($request->filled('min_rating')) {
+            $query->withAvg('testimonials', 'rating')
+                ->having('testimonials_avg_rating', '>=', (float) $request->min_rating);
+        }
+
+        $sort = $request->get('sort', 'latest');
+
+        if ($sort === 'price_asc') {
+            $query->orderBy('packages_min_price_start');
+        } elseif ($sort === 'name') {
+            $query->orderBy('name');
+        } elseif ($sort === 'rating') {
+            $query->orderByDesc('testimonials_avg_rating');
+        } else {
+            $query->latest();
+        }
+
+        $brands = $query->paginate(12)->withQueryString();
 
         return Inertia::render('landing/explore', [
             'brands'  => $brands,
-            'filters' => $request->only(['search', 'category']),
+            'filters' => $request->only(['search', 'category', 'city', 'verified', 'min_price', 'max_price', 'min_rating', 'sort']),
         ]);
     }
 
@@ -87,8 +125,39 @@ class LandingController extends Controller
 
         BrandAnalytic::record($brand->id, BrandAnalytic::PROFILE_VIEW);
 
+        $testimonials = Testimonials::with('user:id,name')
+            ->where('brand_id', $brand->id)
+            ->where('is_published', true)
+            ->latest('published_at')
+            ->get(['id', 'brand_id', 'user_id', 'rating', 'body', 'published_at']);
+
+        $avgRating = $testimonials->isNotEmpty()
+            ? round($testimonials->avg('rating'), 1)
+            : null;
+
+        $userId = Auth::id();
+
+        $userHasTestimonial = $userId
+            ? Testimonials::where('brand_id', $brand->id)->where('user_id', $userId)->exists()
+            : false;
+
+        $userEventPlans = $userId
+            ? EventPlans::where('user_id', $userId)->select('id', 'name')->orderBy('name')->get()
+            : collect();
+
+        $unavailableDates = BrandUnavailableDates::where('brand_id', $brand->id)
+            ->where('date', '>=', now()->toDateString())
+            ->orderBy('date')
+            ->pluck('date')
+            ->map(fn($d) => $d->toDateString());
+
         return Inertia::render('landing/brand-detail', [
-            'brand' => $brand,
+            'brand'              => $brand,
+            'testimonials'       => $testimonials,
+            'avgRating'          => $avgRating,
+            'userHasTestimonial' => $userHasTestimonial,
+            'userEventPlans'     => $userEventPlans,
+            'unavailableDates'   => $unavailableDates,
         ]);
     }
 
@@ -133,6 +202,29 @@ class LandingController extends Controller
             'portfolios' => $portfolios,
             'eventTypes' => $eventTypes,
             'filters'    => $request->only(['event_type']),
+        ]);
+    }
+
+    public function compare(Request $request)
+    {
+        $ids = collect(explode(',', $request->get('ids', '')))
+            ->map(fn($id) => (int) trim($id))
+            ->filter()
+            ->unique()
+            ->take(3);
+
+        $brands = Brands::whereIn('id', $ids)
+            ->where('is_active', true)
+            ->with([
+                'packages' => fn($q) => $q->orderByDesc('is_featured')->orderBy('price_start'),
+            ])
+            ->withMin('packages', 'price_start')
+            ->withAvg('testimonials', 'rating')
+            ->withCount('testimonials')
+            ->get();
+
+        return Inertia::render('landing/compare', [
+            'brands' => $brands,
         ]);
     }
 

@@ -92,7 +92,7 @@ class VendorApplicationController extends Controller implements HasMiddleware
         );
         $vendor->syncRoles(['vendor']);
 
-        // Create brand if user doesn't have one yet
+        // Create brand if user doesn't have one yet, auto-verify on approval
         if (!$vendor->brand) {
             Brands::create([
                 'user_id'     => $vendor->id,
@@ -102,7 +102,11 @@ class VendorApplicationController extends Controller implements HasMiddleware
                 'description' => '',
                 'address'     => '',
                 'is_active'   => true,
+                'is_verified' => true,
+                'verified_at' => now(),
             ]);
+        } else {
+            $vendor->brand->update(['is_verified' => true, 'verified_at' => now()]);
         }
 
         $application->update([

@@ -1,6 +1,6 @@
-import { type Brand } from '@/types';
-import { Link } from '@inertiajs/react';
-import { MapPin } from 'lucide-react';
+import { type Auth, type Brand } from '@/types';
+import { Link, router, usePage } from '@inertiajs/react';
+import { BadgeCheck, Heart, MapPin } from 'lucide-react';
 
 export interface BrandWithStats extends Brand {
     packages_min_price_start?: number | null;
@@ -46,6 +46,30 @@ export function BrandLogo({ brand, className }: { brand: Pick<Brand, 'logo' | 'n
     return <BrandInitials name={brand.name} className={className} />;
 }
 
+function FavoriteButton({ brandId }: { brandId: number }) {
+    const { auth } = usePage().props as { auth?: Auth };
+    const isLoggedIn = !!auth?.user;
+    const isFavorited = auth?.favorite_brand_ids?.includes(brandId) ?? false;
+
+    if (!isLoggedIn) return null;
+
+    function toggle(e: React.MouseEvent) {
+        e.preventDefault();
+        e.stopPropagation();
+        router.post('/favorites/toggle', { brand_id: brandId }, { preserveScroll: true });
+    }
+
+    return (
+        <button
+            onClick={toggle}
+            className="absolute top-3 right-3 z-10 bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow hover:scale-110 transition-transform"
+            title={isFavorited ? 'Hapus dari favorit' : 'Tambah ke favorit'}
+        >
+            <Heart className={`h-4 w-4 transition-colors ${isFavorited ? 'fill-rose-500 text-rose-500' : 'text-lp-on-surface-variant'}`} />
+        </button>
+    );
+}
+
 export function BrandCard({ brand }: { brand: BrandWithStats }) {
     return (
         <Link href={`/brand/${brand.slug}`} className="block h-full">
@@ -61,6 +85,7 @@ export function BrandCard({ brand }: { brand: BrandWithStats }) {
                     ) : (
                         <BrandInitials name={brand.name} className="w-full h-full text-5xl" />
                     )}
+                    <FavoriteButton brandId={brand.id} />
                     {/* Logo overlap */}
                     <div className="absolute -bottom-5 left-5 w-12 h-12 rounded-full border-4 border-white overflow-hidden shadow-md bg-white flex-shrink-0">
                         <BrandLogo brand={brand} className="w-full h-full text-xs" />
@@ -70,7 +95,12 @@ export function BrandCard({ brand }: { brand: BrandWithStats }) {
                 {/* Body */}
                 <div className="p-4 pt-8 flex-grow flex flex-col gap-1">
                     <div className="flex items-start justify-between gap-2">
-                        <h3 className="font-playfair text-lg font-semibold text-lp-on-surface leading-tight">{brand.name}</h3>
+                        <div className="flex items-center gap-1.5 min-w-0">
+                            <h3 className="font-playfair text-lg font-semibold text-lp-on-surface leading-tight truncate">{brand.name}</h3>
+                            {brand.is_verified && (
+                                <BadgeCheck className="h-4 w-4 text-lp-primary flex-shrink-0" title="Brand Terverifikasi" />
+                            )}
+                        </div>
                         <div className="flex gap-1 flex-shrink-0 flex-wrap justify-end">
                             {brand.category?.map((cat) => (
                                 <span key={cat} className="bg-lp-surface-container-high text-lp-primary px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap">

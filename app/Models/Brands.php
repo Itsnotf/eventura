@@ -22,13 +22,17 @@ class Brands extends Model
         'website',
         'is_active',
         'featured_count',
+        'is_verified',
+        'verified_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'category' => 'array',
-            'is_active' => 'boolean',
+            'category'    => 'array',
+            'is_active'   => 'boolean',
+            'is_verified' => 'boolean',
+            'verified_at' => 'datetime',
         ];
     }
 
@@ -45,5 +49,15 @@ class Brands extends Model
     public function portfolios()
     {
         return $this->hasMany(BrandPortfolios::class, 'brand_id', 'id');
+    }
+
+    public function testimonials()
+    {
+        return $this->hasMany(Testimonials::class, 'brand_id', 'id');
+    }
+
+    public function favoritedByUsers()
+    {
+        return $this->hasMany(Favorites::class, 'brand_id');
     }
 }

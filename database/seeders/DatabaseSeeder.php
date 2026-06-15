@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             ServiceCategorySeeder::class,
             BrandPackagesSeeder::class,
             PortfolioSeeder::class,
+            TestimonialSeeder::class,
         ]);
     }
 }
