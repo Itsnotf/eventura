@@ -15,20 +15,20 @@ import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import {
+    Bell,
     BookOpen,
     CalendarCheck,
     CalendarDays,
     ClipboardList,
     Folder,
+    Globe,
     Heart,
     KeyIcon,
     LayoutGrid,
     MessageSquare,
     Settings2,
-    ShieldCheck,
     Star,
     User,
-    Users,
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -43,9 +43,10 @@ const adminUserMgmt: NavItem[] = [
 ];
 
 const adminBrandMgmt: NavItem[] = [
-    { title: 'Brands',            href: '/brands',               icon: BookOpen, permissions: ['brands index'] },
-    { title: 'Vendor Applications', href: '/vendor-applications', icon: ClipboardList, permissions: ['vendor applications index'] },
-    { title: 'Kategori Layanan',  href: '/service-categories',   icon: Settings2, permissions: ['service categories index'] },
+    { title: 'Brands',              href: '/brands',               icon: BookOpen,     permissions: ['brands index'] },
+    { title: 'Vendor Applications', href: '/vendor-applications',  icon: ClipboardList, permissions: ['vendor applications index'] },
+    { title: 'Kategori Layanan',    href: '/service-categories',   icon: Settings2,    permissions: ['service categories index'] },
+    { title: 'Pengaturan Situs',    href: '/site-settings',        icon: Bell,         permissions: ['site settings index'] },
 ];
 
 // Vendor-only navigation
@@ -65,7 +66,9 @@ const customerItems: NavItem[] = [
     { title: 'Inquiry Saya',  href: '/my-inquiries', icon: MessageSquare, permissions: ['inquiries create'] },
 ];
 
-const footerNavItems: NavItem[] = [];
+const footerNavItems: NavItem[] = [
+    { title: 'Lihat Situs', href: '/', icon: Globe },
+];
 
 export function AppSidebar() {
     const { isAdmin, isVendor, isUser } = useRole();

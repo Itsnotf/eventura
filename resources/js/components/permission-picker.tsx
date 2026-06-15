@@ -1,5 +1,20 @@
 import { Checkbox } from '@/components/ui/checkbox';
-import { Building2, ImageIcon, Package, ShieldCheck, Users } from 'lucide-react';
+import {
+    Archive,
+    Bell,
+    Building2,
+    CalendarCheck,
+    CalendarDays,
+    ClipboardList,
+    Heart,
+    ImageIcon,
+    MessageSquare,
+    Package,
+    Settings2,
+    ShieldCheck,
+    Star,
+    Users,
+} from 'lucide-react';
 
 interface Permission {
     id: number;
@@ -18,6 +33,12 @@ const ACTION_LABELS: Record<string, string> = {
     edit: 'Edit',
     delete: 'Hapus',
     show: 'Lihat Detail',
+    update: 'Update',
+    manage: 'Kelola',
+    approve: 'Setujui',
+    reject: 'Tolak',
+    moderate: 'Moderasi',
+    verify: 'Verifikasi',
 };
 
 const GROUPS = [
@@ -32,6 +53,54 @@ const GROUPS = [
         label: 'Manajemen Role & Hak Akses',
         description: 'Kelola role dan permission pengguna',
         Icon: ShieldCheck,
+    },
+    {
+        prefix: 'vendor applications',
+        label: 'Lamaran Vendor',
+        description: 'Review dan setujui pendaftaran vendor baru',
+        Icon: ClipboardList,
+    },
+    {
+        prefix: 'service categories',
+        label: 'Kategori Layanan',
+        description: 'Kelola kategori layanan EO & WO',
+        Icon: Settings2,
+    },
+    {
+        prefix: 'testimonials',
+        label: 'Testimoni',
+        description: 'Moderasi testimoni dari pelanggan',
+        Icon: Star,
+    },
+    {
+        prefix: 'favorites',
+        label: 'Favorit',
+        description: 'Akses data favorit pelanggan',
+        Icon: Heart,
+    },
+    {
+        prefix: 'event plans',
+        label: 'Rencana Acara',
+        description: 'Kelola rencana acara pelanggan',
+        Icon: CalendarDays,
+    },
+    {
+        prefix: 'inquiries',
+        label: 'Inquiry',
+        description: 'Kelola pesan inquiry dari pelanggan ke vendor',
+        Icon: MessageSquare,
+    },
+    {
+        prefix: 'availability',
+        label: 'Ketersediaan Tanggal',
+        description: 'Kelola tanggal tidak tersedia vendor',
+        Icon: CalendarCheck,
+    },
+    {
+        prefix: 'site settings',
+        label: 'Pengaturan Situs',
+        description: 'Kelola konten halaman About & Contact',
+        Icon: Bell,
     },
     // longer prefixes must come before shorter ones
     {

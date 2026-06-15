@@ -59,12 +59,14 @@ class EventPlansController extends Controller implements HasMiddleware
             ->where('user_id', Auth::id())
             ->findOrFail($id);
 
-        $totalBudget = $plan->items->sum('price_snapshot');
+        $totalStart = $plan->items->sum('price_start_snapshot');
+        $totalEnd   = $plan->items->sum('price_end_snapshot');
 
         return Inertia::render('event-plans/show', [
-            'plan'        => $plan,
-            'totalBudget' => $totalBudget,
-            'flash'       => ['success' => session('success')],
+            'plan'       => $plan,
+            'totalStart' => $totalStart,
+            'totalEnd'   => $totalEnd,
+            'flash'      => ['success' => session('success')],
         ]);
     }
 
@@ -91,13 +93,14 @@ class EventPlansController extends Controller implements HasMiddleware
         }
 
         EventPlanItems::create([
-            'event_plan_id'          => $plan->id,
-            'brand_id'               => $package->brand_id,
-            'brand_package_id'       => $package->id,
-            'service_category_id'    => $package->service_category_id,
-            'price_snapshot'         => $package->price_start,
-            'package_name_snapshot'  => $package->name,
-            'brand_name_snapshot'    => $package->brand->name,
+            'event_plan_id'         => $plan->id,
+            'brand_id'              => $package->brand_id,
+            'brand_package_id'      => $package->id,
+            'service_category_id'   => $package->service_category_id,
+            'price_start_snapshot'  => $package->price_start,
+            'price_end_snapshot'    => $package->price_end ?? $package->price_start,
+            'package_name_snapshot' => $package->name,
+            'brand_name_snapshot'   => $package->brand->name,
         ]);
 
         return back()->with('success', 'Paket ditambahkan ke rencana.');

@@ -24,6 +24,7 @@ class VendorApplications extends Model
     protected function casts(): array
     {
         return [
+            'category'    => 'array',
             'reviewed_at' => 'datetime',
         ];
     }

@@ -18,7 +18,8 @@ class StoreVendorApplicationRequest extends FormRequest
             'email'          => ['required', 'email', 'max:255'],
             'phone'          => ['required', 'string', 'max:20'],
             'brand_name'     => ['required', 'string', 'max:255'],
-            'category'       => ['required', 'string', 'in:EO,WO,Catering,Dekorasi,Dokumentasi,Rias & Busana,Sound System & Lighting,Venue,MC & Hiburan,Undangan & Souvenir,Lainnya'],
+            'category'       => ['required', 'array', 'min:1'],
+            'category.*'     => ['in:EO,WO'],
             'message'        => ['nullable', 'string', 'max:2000'],
             'document'       => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
         ];

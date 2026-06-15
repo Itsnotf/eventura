@@ -1,9 +1,11 @@
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Edit, Plus, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
 interface Category {
     id: number;
@@ -24,9 +26,18 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function ServiceCategoriesIndex({ categories, flash }: Props) {
+    const [confirmId, setConfirmId] = useState<number | null>(null);
+    const [confirmName, setConfirmName] = useState('');
+
     function destroy(id: number, name: string) {
-        if (confirm(`Hapus kategori "${name}"?`)) {
-            router.delete(`/service-categories/${id}`);
+        setConfirmId(id);
+        setConfirmName(name);
+    }
+
+    function doDestroy() {
+        if (confirmId !== null) {
+            router.delete(`/service-categories/${confirmId}`);
+            setConfirmId(null);
         }
     }
 
@@ -91,6 +102,15 @@ export default function ServiceCategoriesIndex({ categories, flash }: Props) {
                     </Table>
                 </div>
             </div>
+
+            <ConfirmDialog
+                open={confirmId !== null}
+                title={`Hapus kategori "${confirmName}"?`}
+                description="Kategori yang sudah digunakan paket tidak dapat dihapus."
+                confirmLabel="Hapus"
+                onConfirm={doDestroy}
+                onCancel={() => setConfirmId(null)}
+            />
         </AppLayout>
     );
 }

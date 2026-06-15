@@ -11,7 +11,8 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { Link, Head, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
+import { toast } from 'sonner';
 import { BreadcrumbItem, BrandPortfolio, ImagePortfolio, SharedData } from '@/types';
 import { Edit2Icon, Trash2Icon, Calendar, Image as ImageIcon, Upload, AlertCircle } from 'lucide-react';
 import hasAnyPermission from '@/lib/utils';
@@ -126,7 +127,7 @@ export default function BrandPortfolioShowPage({ brandPortfolio }: Props) {
         } catch (error: any) {
             setDeletingImageId(null);
             const errorMsg = error?.message ?? 'Failed to delete image';
-            alert(`Failed to delete image: ${errorMsg}`);
+            toast.error(`Gagal menghapus gambar: ${errorMsg}`);
         }
     };
 

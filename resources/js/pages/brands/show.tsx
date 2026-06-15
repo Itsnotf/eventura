@@ -97,7 +97,7 @@ export default function BrandShowPage({
 
                     {/* Action Buttons */}
                     <div className="flex gap-2 flex-wrap">
-                        {hasAnyPermission(['brands edit']) && (
+                        {hasAnyPermission(['brands verify']) && (
                             <>
                                 {brand.is_verified ? (
                                     <Button

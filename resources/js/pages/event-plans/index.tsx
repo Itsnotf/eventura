@@ -1,8 +1,9 @@
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { CalendarDays, Plus, Trash2 } from 'lucide-react';
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 
 interface ServiceCategory {
     id: number;
@@ -12,7 +13,8 @@ interface ServiceCategory {
 interface PlanItem {
     id: number;
     service_category_id: number | null;
-    price_snapshot: number;
+    price_start_snapshot: number;
+    price_end_snapshot: number;
     package_name_snapshot: string;
     brand_name_snapshot: string;
     serviceCategory?: ServiceCategory | null;
@@ -39,6 +41,11 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 function formatPrice(n: number) {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
+}
+
+function formatPriceRange(start: number, end: number) {
+    if (end > start) return `${formatPrice(start)} – ${formatPrice(end)}`;
+    return formatPrice(start);
 }
 
 function CreatePlanForm() {
@@ -102,6 +109,15 @@ function CreatePlanForm() {
 }
 
 export default function EventPlansIndex({ plans, flash }: Props) {
+    const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
+
+    function doDelete() {
+        if (confirmDelete !== null) {
+            router.delete(`/event-plans/${confirmDelete}`);
+            setConfirmDelete(null);
+        }
+    }
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Rencana Acara" />
@@ -124,7 +140,8 @@ export default function EventPlansIndex({ plans, flash }: Props) {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {plans.map(plan => {
-                            const total = plan.items.reduce((s, i) => s + i.price_snapshot, 0);
+                            const totalStart = plan.items.reduce((s, i) => s + i.price_start_snapshot, 0);
+                            const totalEnd = plan.items.reduce((s, i) => s + i.price_end_snapshot, 0);
                             return (
                                 <div key={plan.id} className="rounded-lg border bg-card p-5 flex flex-col gap-3">
                                     <div className="flex justify-between items-start gap-2">
@@ -139,14 +156,14 @@ export default function EventPlansIndex({ plans, flash }: Props) {
                                             )}
                                         </div>
                                         <button
-                                            onClick={() => { if (confirm('Hapus rencana ini?')) router.delete(`/event-plans/${plan.id}`); }}
+                                            onClick={() => setConfirmDelete(plan.id)}
                                             className="text-muted-foreground hover:text-destructive"
                                         >
                                             <Trash2 className="h-4 w-4" />
                                         </button>
                                     </div>
                                     <div className="text-sm text-muted-foreground">
-                                        {plan.items.length} paket · estimasi {formatPrice(total)}
+                                        {plan.items.length} paket · estimasi {formatPriceRange(totalStart, totalEnd)}
                                     </div>
                                     <Link href={`/event-plans/${plan.id}`} className="text-xs text-primary font-semibold hover:underline self-end">
                                         Lihat detail →
@@ -157,6 +174,15 @@ export default function EventPlansIndex({ plans, flash }: Props) {
                     </div>
                 )}
             </div>
+
+            <ConfirmDialog
+                open={confirmDelete !== null}
+                title="Hapus rencana acara?"
+                description="Semua item dalam rencana ini juga akan dihapus. Tindakan ini tidak dapat dibatalkan."
+                confirmLabel="Hapus"
+                onConfirm={doDelete}
+                onCancel={() => setConfirmDelete(null)}
+            />
         </AppLayout>
     );
 }

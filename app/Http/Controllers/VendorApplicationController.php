@@ -6,11 +6,14 @@ use App\Http\Requests\VendorApplicationRequest\StoreVendorApplicationRequest;
 use App\Models\Brands;
 use App\Models\User;
 use App\Models\VendorApplications;
+use App\Notifications\VendorApplicationApproved;
+use App\Notifications\VendorApplicationRejected;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -99,7 +102,7 @@ class VendorApplicationController extends Controller implements HasMiddleware
                 'user_id'     => $vendor->id,
                 'name'        => $application->brand_name,
                 'slug'        => Str::slug($application->brand_name) . '-' . Str::random(4),
-                'category'    => [$application->category],
+                'category'    => $application->category,
                 'description' => '',
                 'address'     => '',
                 'whatsapp_number' => $application->phone,
@@ -117,8 +120,10 @@ class VendorApplicationController extends Controller implements HasMiddleware
             'reviewed_at' => now(),
         ]);
 
-        // Send password reset so vendor can set their own password
-        \Illuminate\Support\Facades\Password::broker()->sendResetLink(['email' => $vendor->email]);
+        // Build a password reset token and notify the vendor
+        $token    = Password::broker()->createToken($vendor);
+        $resetUrl = url(route('password.reset', ['token' => $token, 'email' => $vendor->email], false));
+        $vendor->notify(new VendorApplicationApproved($application->brand_name, $resetUrl));
 
         return redirect()->route('vendor-applications.index')
             ->with('success', "Aplikasi {$application->brand_name} disetujui. Undangan dikirim ke {$application->email}.");
@@ -138,6 +143,16 @@ class VendorApplicationController extends Controller implements HasMiddleware
             'reviewed_by' => Auth::id(),
             'reviewed_at' => now(),
         ]);
+
+        // Notify the applicant by email
+        $notification = new VendorApplicationRejected($application->brand_name, $application->applicant_name);
+        $applicant = User::firstWhere('email', $application->email);
+        if ($applicant) {
+            $applicant->notify($notification);
+        } else {
+            \Illuminate\Support\Facades\Notification::route('mail', $application->email)
+                ->notify($notification);
+        }
 
         return redirect()->route('vendor-applications.index')
             ->with('success', "Aplikasi {$application->brand_name} ditolak.");

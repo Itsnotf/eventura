@@ -1,7 +1,9 @@
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, Package, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
 interface ServiceCategory {
     id: number;
@@ -17,7 +19,8 @@ interface Brand {
 interface PlanItem {
     id: number;
     service_category_id: number | null;
-    price_snapshot: number;
+    price_start_snapshot: number;
+    price_end_snapshot: number;
     package_name_snapshot: string;
     brand_name_snapshot: string;
     brand?: Brand;
@@ -35,7 +38,8 @@ interface EventPlan {
 
 interface Props {
     plan: EventPlan;
-    totalBudget: number;
+    totalStart: number;
+    totalEnd: number;
     flash?: { success?: string };
 }
 
@@ -48,15 +52,27 @@ function formatPrice(n: number) {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
 }
 
-export default function EventPlanShow({ plan, totalBudget, flash }: Props) {
+function formatPriceRange(start: number, end: number) {
+    if (end > start) return `${formatPrice(start)} – ${formatPrice(end)}`;
+    return formatPrice(start);
+}
+
+export default function EventPlanShow({ plan, totalStart, totalEnd, flash }: Props) {
     const crumbs: BreadcrumbItem[] = [
         ...breadcrumbs,
         { title: plan.name, href: `/event-plans/${plan.id}` },
     ];
 
+    const [confirmItem, setConfirmItem] = useState<number | null>(null);
+
     function removeItem(itemId: number) {
-        if (confirm('Hapus paket ini dari rencana?')) {
-            router.delete(`/event-plans/${plan.id}/items/${itemId}`);
+        setConfirmItem(itemId);
+    }
+
+    function doRemove() {
+        if (confirmItem !== null) {
+            router.delete(`/event-plans/${plan.id}/items/${confirmItem}`);
+            setConfirmItem(null);
         }
     }
 
@@ -87,7 +103,7 @@ export default function EventPlanShow({ plan, totalBudget, flash }: Props) {
                     </div>
                     <div className="text-right">
                         <p className="text-xs text-muted-foreground">Estimasi Total</p>
-                        <p className="text-2xl font-bold text-primary">{formatPrice(totalBudget)}</p>
+                        <p className="text-xl font-bold text-primary">{formatPriceRange(totalStart, totalEnd)}</p>
                         <p className="text-xs text-muted-foreground">{plan.items.length} paket</p>
                     </div>
                 </div>
@@ -120,7 +136,7 @@ export default function EventPlanShow({ plan, totalBudget, flash }: Props) {
                                     </p>
                                 </div>
                                 <div className="text-right flex items-center gap-3">
-                                    <p className="font-semibold text-sm">{formatPrice(item.price_snapshot)}</p>
+                                    <p className="font-semibold text-sm">{formatPriceRange(item.price_start_snapshot, item.price_end_snapshot)}</p>
                                     <button
                                         onClick={() => removeItem(item.id)}
                                         className="text-muted-foreground hover:text-destructive"
@@ -138,6 +154,15 @@ export default function EventPlanShow({ plan, totalBudget, flash }: Props) {
                     Untuk menambah paket, kunjungi halaman detail brand dan klik "Tambah ke Rencana".
                 </p>
             </div>
+
+            <ConfirmDialog
+                open={confirmItem !== null}
+                title="Hapus paket dari rencana?"
+                description="Paket akan dihapus dari rencana acara ini. Tindakan ini tidak dapat dibatalkan."
+                confirmLabel="Hapus"
+                onConfirm={doRemove}
+                onCancel={() => setConfirmItem(null)}
+            />
         </AppLayout>
     );
 }

@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
-import { Inbox } from 'lucide-react';
+import { Archive, Inbox } from 'lucide-react';
 
 interface Customer {
     id: number;
@@ -25,6 +25,7 @@ interface Props {
         data: Inquiry[];
         links: { url: string | null; label: string; active: boolean }[];
     };
+    showArchived?: boolean;
     flash?: { success?: string };
 }
 
@@ -47,15 +48,27 @@ const statusColor: Record<Inquiry['status'], string> = {
     closed: 'bg-gray-100 text-gray-700',
 };
 
-export default function InquiriesIndex({ inquiries, flash }: Props) {
+export default function InquiriesIndex({ inquiries, showArchived, flash }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Inquiry Masuk" />
             <div className="flex flex-col gap-6 p-6">
-                <h1 className="text-2xl font-semibold flex items-center gap-2">
-                    <Inbox className="h-6 w-6" />
-                    Inquiry Masuk
-                </h1>
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                    <h1 className="text-2xl font-semibold flex items-center gap-2">
+                        {showArchived ? <Archive className="h-6 w-6" /> : <Inbox className="h-6 w-6" />}
+                        {showArchived ? 'Arsip Inquiry' : 'Inquiry Masuk'}
+                    </h1>
+                    <Link
+                        href={showArchived ? '/inquiries' : '/inquiries?archived=1'}
+                        className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1.5"
+                    >
+                        {showArchived ? (
+                            <><Inbox className="h-4 w-4" /> Kembali ke Inbox</>
+                        ) : (
+                            <><Archive className="h-4 w-4" /> Lihat Arsip</>
+                        )}
+                    </Link>
+                </div>
 
                 {flash?.success && (
                     <div className="rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">{flash.success}</div>
@@ -63,7 +76,9 @@ export default function InquiriesIndex({ inquiries, flash }: Props) {
 
                 <div className="rounded-lg border bg-card divide-y">
                     {inquiries.data.length === 0 && (
-                        <div className="p-10 text-center text-muted-foreground">Belum ada inquiry yang masuk.</div>
+                        <div className="p-10 text-center text-muted-foreground">
+                            {showArchived ? 'Tidak ada inquiry yang diarsipkan.' : 'Belum ada inquiry yang masuk.'}
+                        </div>
                     )}
                     {inquiries.data.map(inq => (
                         <Link key={inq.id} href={`/inquiries/${inq.id}`} className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors gap-4">

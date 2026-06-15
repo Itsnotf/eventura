@@ -39,6 +39,7 @@ interface Props {
     brand: BrandWithRelations;
     testimonials: Testimonial[];
     avgRating: number | null;
+    reviewsCount: number;
     userHasTestimonial: boolean;
     userEventPlans: EventPlanSummary[];
     unavailableDates: string[];
@@ -383,7 +384,7 @@ function PortfolioThumb({ portfolio, brandSlug }: { portfolio: PortfolioWithImag
     );
 }
 
-export default function BrandDetailPage({ brand, testimonials, avgRating, userHasTestimonial, userEventPlans, unavailableDates }: Props) {
+export default function BrandDetailPage({ brand, testimonials, avgRating, reviewsCount, userHasTestimonial, userEventPlans, unavailableDates }: Props) {
     const { auth } = usePage().props as { auth?: AuthProps };
     const isLoggedIn = !!auth?.user;
     const hasWhatsApp = !!brand.whatsapp_number;
@@ -547,12 +548,12 @@ export default function BrandDetailPage({ brand, testimonials, avgRating, userHa
                     {/* Header */}
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
                         <div>
-                            <h2 className="font-playfair text-3xl font-semibold text-lp-on-surface">Testimoni</h2>
+                            <h2 className="font-playfair text-3xl font-semibold text-lp-on-surface">Testimoni Pilihan</h2>
                             {avgRating !== null && (
                                 <div className="flex items-center gap-2 mt-2">
                                     <StarRow rating={Math.round(avgRating)} size="md" />
                                     <span className="font-playfair text-2xl font-bold text-lp-primary">{avgRating.toFixed(1)}</span>
-                                    <span className="text-lp-on-surface-variant text-sm">dari {testimonials.length} ulasan</span>
+                                    <span className="text-lp-on-surface-variant text-sm">dari {reviewsCount} ulasan</span>
                                 </div>
                             )}
                         </div>

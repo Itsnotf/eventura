@@ -6,7 +6,12 @@ use App\Models\BrandAnalytic;
 use App\Models\BrandPackages;
 use App\Models\BrandPortfolios;
 use App\Models\Brands;
+use App\Models\EventPlans;
+use App\Models\Favorites;
+use App\Models\Inquiries;
+use App\Models\Testimonials;
 use App\Models\User;
+use App\Models\VendorApplications;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -43,16 +48,26 @@ class DashboardController extends Controller
                     'totalViews'       => BrandAnalytic::where('type', BrandAnalytic::PROFILE_VIEW)->where('created_at', '>=', $thirtyDaysAgo)->count(),
                     'totalWaClicks'    => BrandAnalytic::where('type', BrandAnalytic::WHATSAPP_CLICK)->where('created_at', '>=', $thirtyDaysAgo)->count(),
                 ],
-                'recentBrands' => Brands::with('user')->latest()->take(5)->get(),
-                'recentUsers'  => User::with('roles')->latest()->take(5)->get(),
-                'topBrands'    => $topBrands,
+                'recentBrands'        => Brands::with('user')->latest()->take(5)->get(),
+                'recentUsers'         => User::with('roles')->latest()->take(5)->get(),
+                'topBrands'           => $topBrands,
+                'pendingApplications' => VendorApplications::where('status', 'pending')->count(),
+                'recentApplications'  => VendorApplications::where('status', 'pending')->latest()->take(5)->get(),
             ]);
         }
 
         // Customer dashboard
         if ($currentUser->hasRole('user')) {
+            $userId = $currentUser->id;
             return Inertia::render('dashboard', [
-                'role' => 'user',
+                'role'            => 'user',
+                'plansCount'      => EventPlans::where('user_id', $userId)->count(),
+                'favoritesCount'  => Favorites::where('user_id', $userId)->count(),
+                'recentInquiries' => Inquiries::with('brand')
+                    ->where('user_id', $userId)
+                    ->latest()
+                    ->take(5)
+                    ->get(),
             ]);
         }
 
@@ -112,8 +127,11 @@ class DashboardController extends Controller
                 'topPortfolios'   => $topPortfolios,
                 'dailyViews'      => $dailyViews,
             ],
-            'recentPackages'   => BrandPackages::where('brand_id', $brandId)->latest()->take(5)->get(),
-            'recentPortfolios' => BrandPortfolios::where('brand_id', $brandId)->latest()->take(5)->get(),
+            'recentPackages'          => BrandPackages::where('brand_id', $brandId)->latest()->take(5)->get(),
+            'recentPortfolios'        => BrandPortfolios::where('brand_id', $brandId)->latest()->take(5)->get(),
+            'pendingInquiries'        => Inquiries::where('brand_id', $brandId)->where('status', 'pending')->count(),
+            'recentPendingInquiries'  => Inquiries::with('user')->where('brand_id', $brandId)->where('status', 'pending')->latest()->take(5)->get(),
+            'unmoderatedTestimonials' => Testimonials::where('brand_id', $brandId)->whereNull('published_at')->count(),
         ]);
     }
 }

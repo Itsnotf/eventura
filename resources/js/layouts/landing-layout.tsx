@@ -1,6 +1,8 @@
+import { FlashToaster } from '@/components/flash-toaster';
 import { type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { Menu, X } from 'lucide-react';
+import { Toaster } from 'sonner';
 import { useState } from 'react';
 
 const APP_NAME = 'Eventura';
@@ -26,6 +28,9 @@ function LandingNav() {
                             </Link>
                             <Link href="/portfolio" className="text-lp-on-surface-variant hover:text-lp-primary transition-colors text-sm font-semibold tracking-wide">
                                 Portfolio
+                            </Link>
+                            <Link href="/tentang-kami" className="text-lp-on-surface-variant hover:text-lp-primary transition-colors text-sm font-semibold tracking-wide">
+                                Tentang Kami
                             </Link>
                         </div>
                     </div>
@@ -69,6 +74,12 @@ function LandingNav() {
                         </Link>
                         <Link href="/portfolio" className="py-3 px-4 text-lp-on-surface text-sm font-semibold rounded-lg hover:bg-lp-surface-container-low transition-colors" onClick={() => setOpen(false)}>
                             Portfolio
+                        </Link>
+                        <Link href="/tentang-kami" className="py-3 px-4 text-lp-on-surface text-sm font-semibold rounded-lg hover:bg-lp-surface-container-low transition-colors" onClick={() => setOpen(false)}>
+                            Tentang Kami
+                        </Link>
+                        <Link href="/kontak" className="py-3 px-4 text-lp-on-surface text-sm font-semibold rounded-lg hover:bg-lp-surface-container-low transition-colors" onClick={() => setOpen(false)}>
+                            Kontak
                         </Link>
                         <hr className="border-lp-outline-variant my-2" />
                         {auth?.user ? (
@@ -118,6 +129,13 @@ function LandingFooter() {
                             <li><Link href="/join#requirements" className="text-lp-on-surface-variant hover:text-lp-primary text-sm transition-colors">Persyaratan</Link></li>
                         </ul>
                     </div>
+                    <div>
+                        <h4 className="text-lp-on-surface font-semibold text-xs uppercase tracking-widest mb-4">Perusahaan</h4>
+                        <ul className="space-y-2.5">
+                            <li><Link href="/tentang-kami" className="text-lp-on-surface-variant hover:text-lp-primary text-sm transition-colors">Tentang Kami</Link></li>
+                            <li><Link href="/kontak" className="text-lp-on-surface-variant hover:text-lp-primary text-sm transition-colors">Kontak</Link></li>
+                        </ul>
+                    </div>
                 </div>
                 <div className="border-t border-lp-outline-variant mt-10 pt-6">
                     <p className="text-lp-on-surface-variant text-xs text-center">
@@ -137,6 +155,8 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
                 {children}
             </main>
             <LandingFooter />
+            <Toaster position="top-right" />
+            <FlashToaster />
         </div>
     );
 }

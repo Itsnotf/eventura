@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagePortfolioController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SiteSettingsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\EventPlansController;
@@ -32,6 +33,10 @@ Route::post('/brand/{slug}/track-whatsapp', [BrandAnalyticsController::class, 't
 
 Route::get('/compare', [LandingController::class, 'compare'])->name('compare');
 Route::get('/not-found', [BrandsController::class, 'notFound'])->name('not-found');
+
+// Public static pages
+Route::get('/tentang-kami', [SiteSettingsController::class, 'about'])->name('about');
+Route::get('/kontak', [SiteSettingsController::class, 'contact'])->name('contact');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -94,6 +99,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('vendor-applications.approve');
     Route::post('vendor-applications/{id}/reject', [VendorApplicationController::class, 'reject'])
         ->name('vendor-applications.reject');
+
+    // Site Settings (admin)
+    Route::get('site-settings', [SiteSettingsController::class, 'index'])->name('site-settings.index');
+    Route::post('site-settings', [SiteSettingsController::class, 'update'])->name('site-settings.update');
 
 });
 

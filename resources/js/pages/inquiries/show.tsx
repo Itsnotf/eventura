@@ -1,14 +1,15 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft } from 'lucide-react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Archive, ArchiveRestore, ArrowLeft } from 'lucide-react';
 import { FormEvent } from 'react';
 
 interface PlanItem {
     id: number;
     package_name_snapshot: string;
     brand_name_snapshot: string;
-    price_snapshot: number;
+    price_start_snapshot: number;
+    price_end_snapshot: number;
     serviceCategory?: { id: number; name: string } | null;
 }
 
@@ -24,7 +25,9 @@ interface Inquiry {
     event_date: string | null;
     message: string;
     status: 'pending' | 'read' | 'responded' | 'closed';
-    vendor_note: string | null;
+    vendor_response: string | null;
+    responded_at: string | null;
+    is_archived: boolean;
     created_at: string;
     user: { id: number; name: string; email: string };
     brand: { id: number; name: string };
@@ -41,26 +44,44 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Inquiry Masuk', href: '/inquiries' },
 ];
 
-const statusOptions = [
-    { value: 'pending', label: 'Baru' },
-    { value: 'read', label: 'Dibaca' },
-    { value: 'responded', label: 'Direspons' },
-    { value: 'closed', label: 'Ditutup' },
-] as const;
+const statusLabel: Record<Inquiry['status'], string> = {
+    pending: 'Baru',
+    read: 'Dibaca',
+    responded: 'Direspons',
+    closed: 'Ditutup',
+};
+
+const statusColor: Record<Inquiry['status'], string> = {
+    pending: 'bg-yellow-100 text-yellow-800',
+    read: 'bg-blue-100 text-blue-800',
+    responded: 'bg-green-100 text-green-800',
+    closed: 'bg-gray-100 text-gray-700',
+};
 
 function formatPrice(n: number) {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
 }
 
+function formatPriceRange(start: number, end: number) {
+    if (end > start) return `${formatPrice(start)} – ${formatPrice(end)}`;
+    return formatPrice(start);
+}
+
 export default function InquiryShow({ inquiry, flash }: Props) {
-    const { data, setData, patch, processing, errors } = useForm({
-        status: inquiry.status,
-        vendor_note: inquiry.vendor_note ?? '',
+    const { data, setData, post, processing, errors } = useForm({
+        vendor_response: inquiry.vendor_response ?? '',
     });
 
     function submit(e: FormEvent) {
         e.preventDefault();
-        patch(`/inquiries/${inquiry.id}/status`);
+        post(`/inquiries/${inquiry.id}/respond`);
+    }
+
+    function toggleArchive() {
+        const route = inquiry.is_archived
+            ? `/inquiries/${inquiry.id}/unarchive`
+            : `/inquiries/${inquiry.id}/archive`;
+        router.post(route);
     }
 
     const crumbs: BreadcrumbItem[] = [
@@ -72,9 +93,19 @@ export default function InquiryShow({ inquiry, flash }: Props) {
         <AppLayout breadcrumbs={crumbs}>
             <Head title={`Inquiry dari ${inquiry.user.name}`} />
             <div className="flex flex-col gap-6 p-6">
-                <Link href="/inquiries" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-                    <ArrowLeft className="h-4 w-4" /> Kembali
-                </Link>
+                <div className="flex items-center gap-3 flex-wrap">
+                    <Link href="/inquiries" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+                        <ArrowLeft className="h-4 w-4" /> Kembali
+                    </Link>
+                    <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColor[inquiry.status]}`}>
+                        {statusLabel[inquiry.status]}
+                    </span>
+                    {inquiry.is_archived && (
+                        <span className="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-600">
+                            Diarsipkan
+                        </span>
+                    )}
+                </div>
 
                 {flash?.success && (
                     <div className="rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">{flash.success}</div>
@@ -102,7 +133,23 @@ export default function InquiryShow({ inquiry, flash }: Props) {
                                 <span className="text-muted-foreground text-xs">Pesan</span>
                                 <p className="text-sm mt-1 leading-relaxed whitespace-pre-wrap">{inquiry.message}</p>
                             </div>
+                            <p className="text-xs text-muted-foreground">
+                                Diterima: {new Date(inquiry.created_at).toLocaleDateString('id-ID', { dateStyle: 'long' })}
+                            </p>
                         </div>
+
+                        {/* Vendor response display (if already responded) */}
+                        {inquiry.vendor_response && (
+                            <div className="rounded-lg border bg-muted/30 p-5">
+                                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Respons yang Terkirim</p>
+                                <p className="text-sm leading-relaxed whitespace-pre-wrap">{inquiry.vendor_response}</p>
+                                {inquiry.responded_at && (
+                                    <p className="text-xs text-muted-foreground mt-2">
+                                        Direspons pada {new Date(inquiry.responded_at).toLocaleDateString('id-ID', { dateStyle: 'long' })}
+                                    </p>
+                                )}
+                            </div>
+                        )}
 
                         {/* Attached event plan */}
                         {inquiry.eventPlan && (
@@ -116,7 +163,7 @@ export default function InquiryShow({ inquiry, flash }: Props) {
                                                 <span>{item.package_name_snapshot}</span>
                                                 <span className="text-muted-foreground ml-1">({item.brand_name_snapshot})</span>
                                             </div>
-                                            <span className="font-medium">{formatPrice(item.price_snapshot)}</span>
+                                            <span className="font-medium">{formatPriceRange(item.price_start_snapshot, item.price_end_snapshot)}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -124,41 +171,41 @@ export default function InquiryShow({ inquiry, flash }: Props) {
                         )}
                     </div>
 
-                    {/* Vendor response form */}
-                    <div>
-                        <form onSubmit={submit} className="rounded-lg border bg-card p-5 space-y-4 sticky top-6">
-                            <h3 className="font-semibold text-sm">Update Status</h3>
-
-                            <div>
-                                <label className="block text-xs font-medium mb-1 text-muted-foreground">Status</label>
-                                <select
-                                    value={data.status}
-                                    onChange={e => setData('status', e.target.value as typeof data.status)}
-                                    className="w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                                >
-                                    {statusOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-medium mb-1 text-muted-foreground">Catatan ke Pelanggan</label>
+                    {/* Vendor actions */}
+                    <div className="space-y-4">
+                        {/* Respond form */}
+                        {inquiry.status !== 'closed' && (
+                            <form onSubmit={submit} className="rounded-lg border bg-card p-5 space-y-4">
+                                <h3 className="font-semibold text-sm">Kirim Balasan</h3>
                                 <textarea
-                                    rows={4}
-                                    value={data.vendor_note}
-                                    onChange={e => setData('vendor_note', e.target.value)}
-                                    placeholder="Catatan atau respons singkat..."
+                                    rows={5}
+                                    value={data.vendor_response}
+                                    onChange={e => setData('vendor_response', e.target.value)}
+                                    placeholder="Tulis respons untuk pelanggan..."
                                     className="w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                                 />
-                            </div>
+                                {errors.vendor_response && <p className="text-xs text-destructive mt-1">{errors.vendor_response}</p>}
+                                <button
+                                    type="submit"
+                                    disabled={processing}
+                                    className="w-full bg-primary text-primary-foreground py-2 rounded-md text-sm font-semibold hover:opacity-90 disabled:opacity-50"
+                                >
+                                    {processing ? 'Mengirim...' : 'Kirim Balasan'}
+                                </button>
+                            </form>
+                        )}
 
-                            <button
-                                type="submit"
-                                disabled={processing}
-                                className="w-full bg-primary text-primary-foreground py-2 rounded-md text-sm font-semibold hover:opacity-90 disabled:opacity-50"
-                            >
-                                {processing ? 'Menyimpan...' : 'Simpan'}
-                            </button>
-                        </form>
+                        {/* Archive toggle */}
+                        <button
+                            onClick={toggleArchive}
+                            className="w-full flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
+                        >
+                            {inquiry.is_archived ? (
+                                <><ArchiveRestore className="h-4 w-4" /> Kembalikan ke Inbox</>
+                            ) : (
+                                <><Archive className="h-4 w-4" /> Arsipkan</>
+                            )}
+                        </button>
                     </div>
                 </div>
             </div>

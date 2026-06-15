@@ -1,8 +1,9 @@
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, useForm } from '@inertiajs/react';
 import { CalendarX, Plus, Trash2 } from 'lucide-react';
-import { FormEvent } from 'react';
+import { FormEvent, useState } from 'react';
 
 interface UnavailableDate {
     id: number;
@@ -25,15 +26,17 @@ export default function AvailabilityIndex({ unavailableDates, flash }: Props) {
         date: '',
         reason: '',
     });
+    const [confirmId, setConfirmId] = useState<number | null>(null);
 
     function submit(e: FormEvent) {
         e.preventDefault();
         post('/availability', { onSuccess: () => reset() });
     }
 
-    function remove(id: number) {
-        if (confirm('Hapus tanggal ini?')) {
-            router.delete(`/availability/${id}`, { preserveScroll: true });
+    function doRemove() {
+        if (confirmId !== null) {
+            router.delete(`/availability/${confirmId}`, { preserveScroll: true });
+            setConfirmId(null);
         }
     }
 
@@ -105,7 +108,7 @@ export default function AvailabilityIndex({ unavailableDates, flash }: Props) {
                                     {ud.reason && <p className="text-xs text-muted-foreground">{ud.reason}</p>}
                                 </div>
                                 <button
-                                    onClick={() => remove(ud.id)}
+                                    onClick={() => setConfirmId(ud.id)}
                                     className="text-muted-foreground hover:text-destructive transition-colors"
                                     title="Hapus"
                                 >
@@ -116,6 +119,15 @@ export default function AvailabilityIndex({ unavailableDates, flash }: Props) {
                     </div>
                 )}
             </div>
+
+            <ConfirmDialog
+                open={confirmId !== null}
+                title="Hapus tanggal ini?"
+                description="Tanggal tidak tersedia ini akan dihapus. Vendor akan kembali tersedia pada tanggal tersebut."
+                confirmLabel="Hapus"
+                onConfirm={doRemove}
+                onCancel={() => setConfirmId(null)}
+            />
         </AppLayout>
     );
 }

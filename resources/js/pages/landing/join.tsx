@@ -2,7 +2,6 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import LandingLayout from '@/layouts/landing-layout';
 import { Head, useForm, usePage } from '@inertiajs/react';
@@ -19,18 +18,9 @@ import {
 } from 'lucide-react';
 import { useRef } from 'react';
 
-const CATEGORIES = [
-    'EO',
-    'WO',
-    'Catering',
-    'Dekorasi',
-    'Dokumentasi',
-    'Rias & Busana',
-    'Sound System & Lighting',
-    'Venue',
-    'MC & Hiburan',
-    'Undangan & Souvenir',
-    'Lainnya',
+const VENDOR_TYPES = [
+    { value: 'EO', label: 'Event Organizer', desc: 'Menangani berbagai jenis acara (konser, seminar, pameran, dll.)' },
+    { value: 'WO', label: 'Wedding Organizer', desc: 'Spesialis pernikahan dan acara terkait' },
 ];
 
 const REQUIREMENTS = [
@@ -82,7 +72,7 @@ export default function JoinPage() {
         email: string;
         phone: string;
         brand_name: string;
-        category: string;
+        category: string[];
         message: string;
         document: File | null;
     }>({
@@ -90,10 +80,17 @@ export default function JoinPage() {
         email: '',
         phone: '',
         brand_name: '',
-        category: '',
+        category: [],
         message: '',
         document: null,
     });
+
+    function toggleCategory(value: string) {
+        setData('category', data.category.includes(value)
+            ? data.category.filter(v => v !== value)
+            : [...data.category, value],
+        );
+    }
 
     function submit(e: React.FormEvent) {
         e.preventDefault();
@@ -218,31 +215,37 @@ export default function JoinPage() {
                             <InputError message={errors.email} />
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <div className="space-y-1.5">
-                                <Label htmlFor="brand_name">Nama Brand <span className="text-red-500">*</span></Label>
-                                <Input
-                                    id="brand_name"
-                                    value={data.brand_name}
-                                    onChange={e => setData('brand_name', e.target.value)}
-                                    placeholder="Nama brand Anda"
-                                />
-                                <InputError message={errors.brand_name} />
+                        <div className="space-y-1.5">
+                            <Label htmlFor="brand_name">Nama Brand <span className="text-red-500">*</span></Label>
+                            <Input
+                                id="brand_name"
+                                value={data.brand_name}
+                                onChange={e => setData('brand_name', e.target.value)}
+                                placeholder="Nama brand Anda"
+                            />
+                            <InputError message={errors.brand_name} />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Tipe Vendor <span className="text-red-500">*</span></Label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {VENDOR_TYPES.map(vt => (
+                                    <button
+                                        key={vt.value}
+                                        type="button"
+                                        onClick={() => toggleCategory(vt.value)}
+                                        className={`text-left p-4 rounded-xl border-2 transition-colors ${
+                                            data.category.includes(vt.value)
+                                                ? 'border-lp-primary bg-lp-surface-container text-lp-primary'
+                                                : 'border-lp-outline-variant hover:border-lp-primary/50'
+                                        }`}
+                                    >
+                                        <p className="font-semibold text-sm">{vt.label}</p>
+                                        <p className="text-xs text-lp-on-surface-variant mt-0.5">{vt.desc}</p>
+                                    </button>
+                                ))}
                             </div>
-                            <div className="space-y-1.5">
-                                <Label htmlFor="category">Kategori Layanan <span className="text-red-500">*</span></Label>
-                                <Select value={data.category} onValueChange={v => setData('category', v)}>
-                                    <SelectTrigger id="category">
-                                        <SelectValue placeholder="Pilih kategori" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {CATEGORIES.map(c => (
-                                            <SelectItem key={c} value={c}>{c}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <InputError message={errors.category} />
-                            </div>
+                            <InputError message={errors.category} />
                         </div>
 
                         <div className="space-y-1.5">

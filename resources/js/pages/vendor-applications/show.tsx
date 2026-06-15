@@ -1,8 +1,10 @@
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, Download, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { useState } from 'react';
 
 interface Application {
     id: number;
@@ -10,7 +12,7 @@ interface Application {
     email: string;
     phone: string;
     brand_name: string;
-    category: string;
+    category: string[];
     message: string | null;
     document: string;
     status: 'pending' | 'approved' | 'rejected';
@@ -31,23 +33,31 @@ const STATUS_BADGE: Record<string, string> = {
     rejected: 'bg-red-100 text-red-800',
 };
 
+function Row({ label, value }: { label: string; value: string }) {
+    return (
+        <div className="flex gap-4">
+            <span className="text-muted-foreground text-sm w-32 shrink-0">{label}</span>
+            <span className="text-sm font-medium">{value}</span>
+        </div>
+    );
+}
+
 export default function VendorApplicationShow({ application, documentUrl, flash }: Props) {
+    const [confirmAction, setConfirmAction] = useState<'approve' | 'reject' | null>(null);
+
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Dashboard', href: '/dashboard' },
         { title: 'Vendor Applications', href: '/vendor-applications' },
         { title: application.brand_name, href: `/vendor-applications/${application.id}` },
     ];
 
-    function approve() {
-        if (confirm(`Setujui aplikasi ${application.brand_name}? Akun vendor dan brand akan dibuat otomatis.`)) {
+    function doAction() {
+        if (confirmAction === 'approve') {
             router.post(`/vendor-applications/${application.id}/approve`);
-        }
-    }
-
-    function reject() {
-        if (confirm(`Tolak aplikasi ${application.brand_name}?`)) {
+        } else if (confirmAction === 'reject') {
             router.post(`/vendor-applications/${application.id}/reject`);
         }
+        setConfirmAction(null);
     }
 
     return (
@@ -76,59 +86,73 @@ export default function VendorApplicationShow({ application, documentUrl, flash 
                     <Row label="Email" value={application.email} />
                     <Row label="WhatsApp" value={application.phone} />
                     <Row label="Nama Brand" value={application.brand_name} />
-                    <Row label="Kategori" value={application.category} />
+                    <Row label="Kategori" value={application.category.join(', ')} />
                     <Row label="Tanggal Daftar" value={new Date(application.created_at).toLocaleDateString('id-ID', { dateStyle: 'long' })} />
-
-                    {application.message && (
-                        <div>
-                            <div className="text-sm font-medium text-muted-foreground mb-1">Deskripsi</div>
-                            <p className="text-sm leading-relaxed whitespace-pre-wrap">{application.message}</p>
-                        </div>
+                    {application.reviewed_at && (
+                        <Row label="Direview" value={new Date(application.reviewed_at).toLocaleDateString('id-ID', { dateStyle: 'long' })} />
                     )}
-
-                    <div>
-                        <div className="text-sm font-medium text-muted-foreground mb-1">Dokumen</div>
-                        <a
-                            href={documentUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
-                        >
-                            <Download className="h-4 w-4" />
-                            Lihat / Unduh Dokumen
-                        </a>
-                    </div>
-
                     {application.reviewer && (
-                        <Row
-                            label="Direview oleh"
-                            value={`${application.reviewer.name} (${application.reviewed_at ? new Date(application.reviewed_at).toLocaleDateString('id-ID') : '-'})`}
-                        />
+                        <Row label="Reviewer" value={application.reviewer.name} />
                     )}
                 </div>
 
-                {application.status === 'pending' && (
-                    <div className="flex gap-3">
-                        <Button onClick={approve} className="flex-1 bg-green-600 hover:bg-green-700 text-white">
-                            <ThumbsUp className="h-4 w-4 mr-2" />
-                            Setujui
-                        </Button>
-                        <Button onClick={reject} variant="destructive" className="flex-1">
-                            <ThumbsDown className="h-4 w-4 mr-2" />
-                            Tolak
-                        </Button>
+                {application.message && (
+                    <div className="rounded-xl border bg-card p-6">
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Pesan</p>
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{application.message}</p>
                     </div>
                 )}
-            </div>
-        </AppLayout>
-    );
-}
 
-function Row({ label, value }: { label: string; value: string }) {
-    return (
-        <div className="flex gap-4">
-            <div className="text-sm font-medium text-muted-foreground w-36 flex-shrink-0">{label}</div>
-            <div className="text-sm">{value}</div>
-        </div>
+                <div className="flex gap-3 flex-wrap">
+                    <a
+                        href={documentUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 border rounded-md px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
+                    >
+                        <Download className="h-4 w-4" />
+                        Unduh Dokumen
+                    </a>
+
+                    {application.status === 'pending' && (
+                        <>
+                            <Button
+                                onClick={() => setConfirmAction('approve')}
+                                className="bg-green-600 hover:bg-green-700 text-white gap-2"
+                            >
+                                <ThumbsUp className="h-4 w-4" />
+                                Setujui
+                            </Button>
+                            <Button
+                                variant="destructive"
+                                onClick={() => setConfirmAction('reject')}
+                                className="gap-2"
+                            >
+                                <ThumbsDown className="h-4 w-4" />
+                                Tolak
+                            </Button>
+                        </>
+                    )}
+                </div>
+            </div>
+
+            <ConfirmDialog
+                open={confirmAction === 'approve'}
+                title={`Setujui aplikasi ${application.brand_name}?`}
+                description="Akun vendor dan brand akan dibuat otomatis. Pemohon akan mendapatkan notifikasi."
+                confirmLabel="Ya, Setujui"
+                variant="default"
+                onConfirm={doAction}
+                onCancel={() => setConfirmAction(null)}
+            />
+            <ConfirmDialog
+                open={confirmAction === 'reject'}
+                title={`Tolak aplikasi ${application.brand_name}?`}
+                description="Pemohon akan mendapatkan notifikasi bahwa aplikasinya ditolak."
+                confirmLabel="Ya, Tolak"
+                onConfirm={doAction}
+                onCancel={() => setConfirmAction(null)}
+            />
+        </AppLayout>
     );
 }
