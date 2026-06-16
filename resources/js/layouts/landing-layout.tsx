@@ -32,6 +32,9 @@ function LandingNav() {
                             <Link href="/tentang-kami" className="text-lp-on-surface-variant hover:text-lp-primary transition-colors text-sm font-semibold tracking-wide">
                                 Tentang Kami
                             </Link>
+                            <Link href="/kontak" className="text-lp-on-surface-variant hover:text-lp-primary transition-colors text-sm font-semibold tracking-wide">
+                                Kontak
+                            </Link>
                         </div>
                     </div>
 

@@ -21,6 +21,7 @@ export default function TentangKami({ settings }: Props) {
     const description = get(settings, 'about_description');
     const vision      = get(settings, 'about_vision');
     const mission     = get(settings, 'about_mission');
+    const image       = get(settings, 'about_image');
 
     return (
         <LandingLayout>
@@ -41,6 +42,15 @@ export default function TentangKami({ settings }: Props) {
             </section>
 
             <div className="max-w-[800px] mx-auto px-4 md:px-12 py-16 space-y-12">
+                {/* Gambar utama (opsional) */}
+                {image && (
+                    <img
+                        src={`/storage/${image}`}
+                        alt={title}
+                        className="w-full max-h-80 object-cover rounded-2xl"
+                    />
+                )}
+
                 {/* Description */}
                 {description && (
                     <section>

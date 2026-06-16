@@ -24,6 +24,7 @@ export default function Kontak({ settings }: Props) {
     const address   = get(settings, 'contact_address');
     const hours     = get(settings, 'contact_hours');
     const instagram = get(settings, 'contact_instagram');
+    const maps      = get(settings, 'contact_maps');
 
     const items = [
         email   && { icon: Mail,      label: 'Email',           value: email,     href: `mailto:${email}` },
@@ -77,6 +78,22 @@ export default function Kontak({ settings }: Props) {
                     ))}
                 </div>
             </div>
+            {/* Peta (opsional) */}
+            {maps && (
+                <div className="max-w-[700px] mx-auto px-4 md:px-12 pb-16">
+                    <div className="rounded-2xl overflow-hidden border border-lp-outline-variant">
+                        <iframe
+                            src={maps}
+                            title="Lokasi"
+                            width="100%"
+                            height="320"
+                            style={{ border: 0 }}
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                        />
+                    </div>
+                </div>
+            )}
         </LandingLayout>
     );
 }

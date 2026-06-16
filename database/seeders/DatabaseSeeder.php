@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
             EventPlanSeeder::class,
             InquirySeeder::class,
             BrandUnavailableDateSeeder::class,
-            SiteSettingSeeder::class,
+            SiteSettingsSeeder::class,
         ]);
     }
 }

@@ -29,14 +29,22 @@ class SiteSettingsController extends Controller implements HasMiddleware
 
     public function update(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'settings'         => ['required', 'array'],
             'settings.*.id'    => ['required', 'integer', 'exists:site_settings,id'],
             'settings.*.value' => ['nullable', 'string', 'max:10000'],
+            'images'           => ['nullable', 'array'],
+            'images.*'         => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ]);
 
-        foreach ($data['settings'] as $item) {
-            SiteSettings::where('id', $item['id'])->update(['value' => $item['value']]);
+        foreach ($request->input('settings', []) as $item) {
+            SiteSettings::where('id', $item['id'])->update(['value' => $item['value'] ?? '']);
+        }
+
+        foreach ($request->file('images', []) as $settingId => $file) {
+            if (!$file) continue;
+            $path = $file->store('site', 'public');
+            SiteSettings::where('id', (int) $settingId)->update(['value' => $path]);
         }
 
         SiteSettings::clearCache();

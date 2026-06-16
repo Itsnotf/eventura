@@ -2,14 +2,11 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class VendorApplicationApproved extends Notification implements ShouldQueue
+class VendorApplicationApproved extends Notification
 {
-    use Queueable;
 
     public function __construct(
         public readonly string $brandName,

@@ -16,6 +16,7 @@ class SiteSettingsSeeder extends Seeder
             ['key' => 'about_description', 'group' => 'about',   'type' => 'textarea', 'label' => 'Deskripsi',                   'sort' => 3,  'value' => "Eventura adalah marketplace yang menghubungkan calon klien dengan Event Organizer (EO) dan Wedding Organizer (WO) profesional di seluruh Indonesia.\n\nKami hadir untuk memudahkan proses pencarian, perbandingan, dan komunikasi antara klien dengan vendor terpercaya yang telah terverifikasi.\n\nDengan Eventura, mewujudkan acara impian Anda menjadi lebih mudah, cepat, dan terpercaya."],
             ['key' => 'about_vision',      'group' => 'about',   'type' => 'textarea', 'label' => 'Visi',                        'sort' => 4,  'value' => 'Menjadi platform marketplace EO & WO terdepan di Indonesia yang menghubungkan ribuan vendor profesional dengan jutaan klien.'],
             ['key' => 'about_mission',     'group' => 'about',   'type' => 'textarea', 'label' => 'Misi',                        'sort' => 5,  'value' => "- Menyediakan platform yang mudah digunakan untuk menemukan dan membandingkan vendor EO & WO.\n- Menjamin kualitas vendor melalui proses verifikasi yang ketat.\n- Membangun ekosistem industri event yang transparan dan terpercaya.\n- Membantu vendor lokal berkembang dan menjangkau lebih banyak klien."],
+            ['key' => 'about_image',       'group' => 'about',   'type' => 'image',    'label' => 'Gambar Utama (opsional)',      'sort' => 6,  'value' => ''],
 
             // Contact group
             ['key' => 'contact_title',     'group' => 'contact', 'type' => 'text',     'label' => 'Judul Halaman Kontak',        'sort' => 1,  'value' => 'Hubungi Kami'],
@@ -25,6 +26,7 @@ class SiteSettingsSeeder extends Seeder
             ['key' => 'contact_address',   'group' => 'contact', 'type' => 'textarea', 'label' => 'Alamat',                      'sort' => 5,  'value' => 'Jakarta, Indonesia'],
             ['key' => 'contact_hours',     'group' => 'contact', 'type' => 'text',     'label' => 'Jam Operasional',             'sort' => 6,  'value' => 'Senin – Jumat, 09.00 – 17.00 WIB'],
             ['key' => 'contact_instagram', 'group' => 'contact', 'type' => 'url',      'label' => 'Instagram',                   'sort' => 7,  'value' => 'https://instagram.com/eventura.id'],
+            ['key' => 'contact_maps',      'group' => 'contact', 'type' => 'textarea', 'label' => 'Google Maps (URL Embed)',      'sort' => 8,  'value' => ''],
         ];
 
         foreach ($settings as $setting) {
