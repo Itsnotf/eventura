@@ -1,7 +1,7 @@
 <x-mail::message>
 # Halo, {{ $name }}
 
-Terima kasih telah mendaftarkan brand **{{ $brandName }}** ke Eventura.
+Terima kasih telah mendaftarkan brand **{{ $brandName }}** ke {{ config('app.name') }}.
 
 Setelah melalui proses review, kami menyampaikan bahwa aplikasi Anda **belum dapat kami setujui** pada saat ini.
 

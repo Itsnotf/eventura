@@ -32,6 +32,8 @@ const CATEGORIES = [
     { value: '', label: 'Semua' },
     { value: 'EO', label: 'Event Organizer' },
     { value: 'WO', label: 'Wedding Organizer' },
+    { value: 'CC', label: 'Content Creator' },
+    { value: 'Catering', label: 'Catering' },
 ];
 
 const SORT_OPTIONS = [
@@ -176,7 +178,7 @@ export default function ExplorePage({ brands, filters }: Props) {
             {/* Header */}
             <div className="max-w-[1280px] mx-auto px-4 md:px-12 pt-12 pb-6">
                 <h1 className="font-playfair text-4xl font-bold text-lp-primary mb-2">Explore Brand</h1>
-                <p className="text-lp-on-surface-variant">Temukan EO &amp; WO terbaik di Indonesia untuk acara impian Anda.</p>
+                <p className="text-lp-on-surface-variant">Temukan EO, WO, Content Creator, dan Catering terbaik di Palembang untuk acara impian Anda.</p>
             </div>
 
             {/* Sticky filter bar */}

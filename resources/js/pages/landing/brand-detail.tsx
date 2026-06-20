@@ -2,7 +2,10 @@ import { BrandInitials, BrandLogo, formatPrice, whatsappUrl } from '@/components
 import LandingLayout from '@/layouts/landing-layout';
 import { type Brand, type BrandPackage, type BrandPortfolio, type ImagePortfolio } from '@/types';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
-import { ArrowLeft, BadgeCheck, CalendarPlus, Globe, Instagram, MapPin, MessageCircle, Send, Star } from 'lucide-react';
+import { ArrowLeft, BadgeCheck, CalendarPlus, Globe, ImageOff, Instagram, MapPin, MessageCircle, Send, Star } from 'lucide-react';
+
+const isMapsEmbed = (v?: string | null) =>
+    !!v && v.startsWith('https://www.google.com/maps/embed');
 import { FormEvent, useRef, useState } from 'react';
 
 function trackWhatsapp(slug: string): void {
@@ -284,6 +287,17 @@ function PackageCard({ pkg, whatsapp, slug, eventPlans }: { pkg: BrandPackage; w
     if (pkg.is_featured) {
         return (
             <div className="bg-lp-surface-container-lowest rounded-xl border-2 border-lp-primary shadow-[0_8px_30px_rgba(18,67,65,0.16)] overflow-hidden flex flex-col h-full">
+                {pkg.cover_image ? (
+                    <img
+                        src={`/storage/${pkg.cover_image}`}
+                        alt={pkg.name}
+                        className="w-full aspect-[16/9] object-cover"
+                    />
+                ) : (
+                    <div className="w-full aspect-[16/9] bg-lp-surface-container flex items-center justify-center">
+                        <ImageOff className="h-8 w-8 text-lp-on-surface-variant opacity-40" />
+                    </div>
+                )}
                 <div className="h-1.5 bg-lp-primary" />
                 <div className="p-6 pt-5 flex-grow">
                     <div className="flex items-start justify-between gap-2 mb-3">
@@ -323,6 +337,17 @@ function PackageCard({ pkg, whatsapp, slug, eventPlans }: { pkg: BrandPackage; w
 
     return (
         <div className="bg-lp-surface-container-lowest rounded-xl border border-lp-outline-variant shadow-[0_4px_20px_rgba(18,67,65,0.08)] overflow-hidden hover:shadow-[0_8px_30px_rgba(18,67,65,0.12)] transition-shadow flex flex-col h-full">
+            {pkg.cover_image ? (
+                <img
+                    src={`/storage/${pkg.cover_image}`}
+                    alt={pkg.name}
+                    className="w-full aspect-[16/9] object-cover"
+                />
+            ) : (
+                <div className="w-full aspect-[16/9] bg-lp-surface-container flex items-center justify-center">
+                    <ImageOff className="h-8 w-8 text-lp-on-surface-variant opacity-40" />
+                </div>
+            )}
             <div className="p-6 flex-grow">
                 <h3 className="font-playfair text-xl font-semibold text-lp-on-surface mb-3">{pkg.name}</h3>
                 <div className="mb-3">
@@ -451,12 +476,26 @@ export default function BrandDetailPage({ brand, testimonials, avgRating, review
                         </div>
 
                         {brand.address && (
-                            <div className="flex items-start gap-3 p-5 bg-lp-surface-container-low rounded-xl border border-lp-outline-variant">
-                                <MapPin className="h-5 w-5 text-lp-primary mt-0.5 flex-shrink-0" />
-                                <div>
-                                    <p className="text-xs font-semibold text-lp-on-surface uppercase tracking-wider mb-1">Lokasi</p>
-                                    <p className="text-lp-on-surface-variant text-sm">{brand.address}</p>
+                            <div className="space-y-3">
+                                <div className="flex items-start gap-3 p-5 bg-lp-surface-container-low rounded-xl border border-lp-outline-variant">
+                                    <MapPin className="h-5 w-5 text-lp-primary mt-0.5 flex-shrink-0" />
+                                    <div>
+                                        <p className="text-xs font-semibold text-lp-on-surface uppercase tracking-wider mb-1">Lokasi</p>
+                                        {!isMapsEmbed(brand.address) && (
+                                            <p className="text-lp-on-surface-variant text-sm">{brand.address}</p>
+                                        )}
+                                    </div>
                                 </div>
+                                {isMapsEmbed(brand.address) && (
+                                    <iframe
+                                        src={brand.address}
+                                        className="w-full h-64 rounded-lg border border-lp-outline-variant"
+                                        loading="lazy"
+                                        allowFullScreen
+                                        referrerPolicy="no-referrer-when-downgrade"
+                                        title={`Lokasi ${brand.name}`}
+                                    />
+                                )}
                             </div>
                         )}
                     </div>

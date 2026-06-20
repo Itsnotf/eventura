@@ -30,7 +30,7 @@ class LandingController extends Controller
             });
         }
 
-        if ($request->filled('category') && in_array($request->category, ['EO', 'WO'])) {
+        if ($request->filled('category') && in_array($request->category, ['EO', 'WO', 'CC', 'Catering'])) {
             $query->whereJsonContains('category', $request->category);
         }
 
@@ -125,7 +125,7 @@ class LandingController extends Controller
             });
         }
 
-        if ($request->filled('category') && in_array($request->category, ['EO', 'WO'])) {
+        if ($request->filled('category') && in_array($request->category, ['EO', 'WO', 'CC', 'Catering'])) {
             $query->whereJsonContains('category', $request->category);
         }
 

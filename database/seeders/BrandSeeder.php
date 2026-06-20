@@ -10,62 +10,66 @@ class BrandSeeder extends Seeder
 {
     public function run(): void
     {
+        // Embed Google Maps sementara (NAKA SIGNATURE, Palembang) — disimpan sebagai URL src.
+        // Nanti tiap vendor bisa mengganti lewat form brand.
+        $maps = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3984.4023916126876!2d104.74149459698945!3d-2.9857035193349106!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e3b7508da0f56a1%3A0x8b64644ca138db6d!2sNAKA%20SIGNATURE!5e0!3m2!1sid!2sid!4v1781983009350!5m2!1sid!2sid';
+
         $brands = [
             [
                 'owner' => 'dinar@dinarwo.id',
                 'name' => 'Dinar Wedding Organizer', 'slug' => 'dinar-wedding-organizer',
                 'category' => ['WO'], 'is_verified' => true,
-                'description' => 'Dinar Wedding Organizer menghadirkan pernikahan elegan dan terorganisir di Jakarta. Dari konsep intimate hingga grand ballroom, tim kami menangani koordinasi penuh hari-H dengan detail yang rapi.',
-                'address' => 'Jl. Cikini Raya No. 21, Menteng, Jakarta Pusat 10330',
-                'whatsapp_number' => '081200000001', 'instagram' => '@dinar.wo', 'website' => 'www.dinarwo.id',
-            ],
-            [
-                'owner' => 'lumina@luminawo.id',
-                'name' => 'Lumina Wedding Organizer', 'slug' => 'lumina-wedding-organizer',
-                'category' => ['WO'], 'is_verified' => true,
-                'description' => 'Lumina Wedding Organizer spesialis pernikahan bernuansa hangat dan modern di Bandung. Kami memadukan dekorasi estetik, hiburan, dan koordinasi profesional untuk hari yang berkesan.',
-                'address' => 'Jl. Setiabudhi No. 89, Sukasari, Bandung 40154',
-                'whatsapp_number' => '081200000002', 'instagram' => '@lumina.wo', 'website' => 'www.luminawo.id',
+                'description' => 'Dinar Wedding Organizer menghadirkan pernikahan elegan dan terorganisir di Palembang. Dari paket rumahan hingga gedung dan hotel berbintang, tim kami menangani koordinasi penuh hari-H dengan rapi.',
+                'instagram' => 'dinar.weddingeventorganizer',
             ],
             [
                 'owner' => 'needs@needswo.id',
                 'name' => 'Needs Wedding Organizer', 'slug' => 'needs-wedding-organizer',
                 'category' => ['WO'], 'is_verified' => false,
-                'description' => 'Needs Wedding Organizer membantu pasangan di Surabaya mewujudkan pernikahan sesuai kebutuhan dan anggaran. Fleksibel, transparan, dan detail dalam setiap perencanaan.',
-                'address' => 'Jl. Mayjend Sungkono No. 12, Dukuh Pakis, Surabaya 60224',
-                'whatsapp_number' => '081200000003', 'instagram' => '@needs.wo', 'website' => 'www.needswo.id',
+                'description' => 'Needs Wedding Organizer membantu pasangan di Palembang mewujudkan pernikahan sesuai kebutuhan dan anggaran — fleksibel, transparan, dan detail di setiap tahap perencanaan.',
+                'instagram' => 'needs.wo',
             ],
             [
-                'owner' => 'mj@mjstoria.id',
-                'name' => 'MJ Storia', 'slug' => 'mj-storia',
-                'category' => ['WO', 'EO'], 'is_verified' => true,
-                'description' => 'MJ Storia adalah rumah dokumentasi & produksi yang menangkap cerita di setiap momen. Foto dan video sinematik untuk pernikahan maupun acara, dengan gaya storytelling yang khas.',
-                'address' => 'Jl. Prawirotaman No. 7, Mergangsan, Yogyakarta 55153',
-                'whatsapp_number' => '081200000004', 'instagram' => '@mjstoria', 'website' => 'www.mjstoria.id',
+                'owner' => 'lumina@luminawo.id',
+                'name' => 'Lumina Wedding Organizer', 'slug' => 'lumina-wedding-organizer',
+                'category' => ['WO'], 'is_verified' => true,
+                'description' => 'Lumina Wedding Organizer spesialis pernikahan bernuansa hangat dan modern di Palembang, memadukan dekorasi premium, hiburan, dan koordinasi profesional untuk hari yang berkesan.',
+                'instagram' => 'lumina_weddingorganizer',
             ],
             [
-                'owner' => 'hello@benangmerah.id',
-                'name' => 'Benang Merah', 'slug' => 'benang-merah',
-                'category' => ['WO'], 'is_verified' => false,
-                'description' => 'Benang Merah adalah studio dekorasi & styling yang merangkai detail menjadi suasana. Konsep dekorasi custom, undangan, dan styling pengantin yang rapi dan bermakna.',
-                'address' => 'Jl. Pandanaran No. 30, Semarang Tengah, Semarang 50134',
-                'whatsapp_number' => '081200000005', 'instagram' => '@benangmerah.decor', 'website' => 'www.benangmerah.id',
+                'owner' => 'endless@endlesscreative.id',
+                'name' => 'Endless Creative Production', 'slug' => 'endless-creative-production',
+                'category' => ['EO'], 'is_verified' => true,
+                'description' => 'Endless Creative Production adalah event organizer untuk seminar, gathering korporat, product launching, hingga konser di Palembang. Konsep kreatif dengan eksekusi produksi yang matang.',
+                'instagram' => 'endlesscreative_production',
             ],
             [
                 'owner' => 'reza@marsproduction.id',
                 'name' => 'Mars Production', 'slug' => 'mars-production',
                 'category' => ['EO'], 'is_verified' => true,
-                'description' => 'Mars Production adalah event production house untuk acara korporat, konser kecil, dan gala. Spesialis sound system, lighting, panggung, dan hiburan dengan standar profesional.',
-                'address' => 'Jl. TB Simatupang No. 50, Cilandak, Jakarta Selatan 12430',
-                'whatsapp_number' => '081200000006', 'instagram' => '@mars.production', 'website' => 'www.marsproduction.id',
+                'description' => 'Mars Production menggarap beragam acara — workshop, seminar nasional, anniversary, hingga music festival — dengan tim, sound, lighting, dan panggung berstandar profesional di Palembang.',
+                'instagram' => 'marspro.indonesia',
             ],
             [
-                'owner' => 'gede@endlessproduction.id',
-                'name' => 'Endless Production', 'slug' => 'endless-production',
-                'category' => ['EO', 'WO'], 'is_verified' => false,
-                'description' => 'Endless Production menggarap dokumentasi dan produksi acara di Bali. Dari pernikahan tepi pantai hingga event korporat, kami menyatukan visual, audio, dan hiburan dalam satu tangan.',
-                'address' => 'Jl. Sunset Road No. 100, Kuta, Badung, Bali 80361',
-                'whatsapp_number' => '081200000007', 'instagram' => '@endless.production', 'website' => 'www.endlessproduction.id',
+                'owner' => 'hello@benangmerah.id',
+                'name' => 'Benang Merah', 'slug' => 'benang-merah',
+                'category' => ['CC'], 'is_verified' => false,
+                'description' => 'Benang Merah adalah content creator yang menangkap momen acaramu dalam reels, story, dan konten TikTok yang rapi dan estetik, siap untuk media sosial.',
+                'instagram' => 'benangmerah.cc',
+            ],
+            [
+                'owner' => 'mj@mjstoria.id',
+                'name' => 'MJ Storia', 'slug' => 'mj-storia',
+                'category' => ['CC'], 'is_verified' => true,
+                'description' => 'MJ Storia adalah content creator dengan gaya storytelling elegan — reels, story, dan BTS content untuk mengabadikan setiap momen acara di Palembang.',
+                'instagram' => 'mj_storia',
+            ],
+            [
+                'owner' => 'kuliner@wongkito.id',
+                'name' => 'Kuliner Wong Kito', 'slug' => 'kuliner-wong-kito',
+                'category' => ['Catering'], 'is_verified' => false,
+                'description' => 'Kuliner Wong Kito menyajikan catering khas Palembang untuk syukuran, arisan, ulang tahun, lamaran, hingga pernikahan — dari pempek dan tekwan hingga prasmanan lengkap.',
+                'instagram' => 'kuliner_wongkitoo',
             ],
         ];
 
@@ -79,13 +83,13 @@ class BrandSeeder extends Seeder
                     'user_id'         => $user->id,
                     'name'            => $b['name'],
                     'category'        => $b['category'],
-                    'logo'            => null,
-                    'cover_image'     => null,
+                    'logo'            => null,         // diisi sendiri setelah seed
+                    'cover_image'     => null,         // diisi sendiri setelah seed
                     'description'     => $b['description'],
-                    'address'         => $b['address'],
-                    'whatsapp_number' => $b['whatsapp_number'],
+                    'address'         => $maps,        // embed Google Maps (URL src)
+                    'whatsapp_number' => '0895620512465',
                     'instagram'       => $b['instagram'],
-                    'website'         => $b['website'],
+                    'website'         => null,
                     'is_active'       => true,
                     'featured_count'  => 0,
                     'is_verified'     => $b['is_verified'],

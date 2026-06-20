@@ -21,7 +21,7 @@ class VendorApplicationRejected extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject("Update Aplikasi {$this->brandName} — Eventura")
+            ->subject("Update Aplikasi {$this->brandName} — " . config('app.name'))
             ->markdown('mail.vendor-application-rejected', [
                 'brandName' => $this->brandName,
                 'name'      => $this->applicantName,

@@ -16,6 +16,7 @@ class ServiceCategorySeeder extends Seeder
             'Catering',
             'Dekorasi',
             'Dokumentasi (Foto & Video)',
+            'Konten & Media Sosial',
             'Rias & Busana',
             'Sound System & Lighting',
             'Venue / Gedung',
@@ -31,7 +32,7 @@ class ServiceCategorySeeder extends Seeder
             );
         }
 
-        // Backfill existing packages to "Paket Lengkap"
+        // Backfill paket lama tanpa kategori ke "Paket Lengkap"
         $paketLengkap = ServiceCategories::where('slug', 'paket-lengkap-full-event-wedding')->first();
 
         if ($paketLengkap) {

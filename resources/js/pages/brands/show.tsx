@@ -13,6 +13,9 @@ import hasAnyPermission from '@/lib/utils';
 import { Brand, BreadcrumbItem, SharedData } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { BadgeCheck, Edit2Icon, Eye, Globe, Instagram, MapPin, Phone, ShieldOff } from 'lucide-react';
+
+const isMapsEmbed = (v?: string | null) =>
+    !!v && v.startsWith('https://www.google.com/maps/embed');
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -274,13 +277,24 @@ export default function BrandShowPage({
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <MapPin className="h-5 w-5" />
-                                Address
+                                Lokasi
                             </CardTitle>
                         </CardHeader>
-                        <CardContent>
-                            <p className="leading-relaxed whitespace-pre-wrap text-gray-700">
-                                {brand.address}
-                            </p>
+                        <CardContent className="space-y-3">
+                            {isMapsEmbed(brand.address) ? (
+                                <iframe
+                                    src={brand.address}
+                                    className="w-full h-64 rounded-lg border"
+                                    loading="lazy"
+                                    allowFullScreen
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                    title={`Lokasi ${brand.name}`}
+                                />
+                            ) : (
+                                <p className="leading-relaxed whitespace-pre-wrap text-gray-700">
+                                    {brand.address}
+                                </p>
+                            )}
                         </CardContent>
                     </Card>
                 )}

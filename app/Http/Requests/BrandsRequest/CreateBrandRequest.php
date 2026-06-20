@@ -19,6 +19,14 @@ class CreateBrandRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
+    protected function prepareForValidation(): void
+    {
+        $value = $this->input('address');
+        if ($value && preg_match('/<iframe[^>]*\ssrc=["\']([^"\']+)["\']/i', $value, $m)) {
+            $this->merge(['address' => $m[1]]);
+        }
+    }
+
     public function rules(): array
     {
         return [
@@ -26,11 +34,11 @@ class CreateBrandRequest extends FormRequest
             'name' => 'required|string|max:255',
             'slug' => 'required|unique:brands,slug',
             'category' => 'required|array|min:1',
-            'category.*' => 'in:EO,WO',
+            'category.*' => 'in:EO,WO,CC,Catering',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'description' => 'nullable|string',
-            'address' => 'nullable|string',
+            'address' => ['nullable', 'string', 'starts_with:https://www.google.com/maps/embed'],
             'whatsapp_number' => 'nullable|string|max:20',
             'instagram' => 'nullable|string|max:255',
             'website' => 'nullable|string|max:255',

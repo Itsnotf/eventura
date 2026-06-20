@@ -176,13 +176,16 @@ export default function BrandCreatePage({ users }: Props) {
                             </div>
 
                             <div className="grid gap-2 md:col-span-2">
-                                <Label htmlFor="address">Address</Label>
+                                <Label htmlFor="address">Embed Google Maps Lokasi</Label>
                                 <Textarea
                                     id="address"
                                     name="address"
-                                    placeholder="Full address"
-                                    rows={3}
+                                    placeholder='<iframe src="https://www.google.com/maps/embed?..." ...></iframe>'
+                                    rows={4}
                                 />
+                                <p className="text-xs text-muted-foreground">
+                                    Buka Google Maps → pilih lokasi → Bagikan → tab &ldquo;Sematkan peta&rdquo; → salin &amp; tempel kode di sini.
+                                </p>
                                 <InputError message={errors.address} />
                             </div>
 

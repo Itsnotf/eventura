@@ -16,7 +16,7 @@ function get(settings: Record<string, Setting>, key: string, fallback = '') {
 }
 
 export default function TentangKami({ settings }: Props) {
-    const title       = get(settings, 'about_title', 'Tentang Eventura');
+    const title       = get(settings, 'about_title', 'Tentang Palembang Event Center');
     const tagline     = get(settings, 'about_tagline');
     const description = get(settings, 'about_description');
     const vision      = get(settings, 'about_vision');

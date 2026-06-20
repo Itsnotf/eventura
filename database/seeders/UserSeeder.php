@@ -12,19 +12,20 @@ class UserSeeder extends Seeder
         // ── Admin ───────────────────────────────────────────────
         $admin = User::firstOrCreate(
             ['email' => 'admin@gmail.com'],
-            ['name' => 'Admin Eventura', 'password' => 'password', 'email_verified_at' => now()]
+            ['name' => 'Admin Palembang Event Center', 'password' => 'password', 'email_verified_at' => now()]
         );
         $admin->syncRoles(['admin']);
 
-        // ── Vendor (pemilik 7 brand) ────────────────────────────
+        // ── Vendor (pemilik 8 brand) ────────────────────────────
         $vendors = [
-            ['name' => 'Dinar Maheswari', 'email' => 'dinar@dinarwo.id'],
-            ['name' => 'Lumina Sari',     'email' => 'lumina@luminawo.id'],
-            ['name' => 'Nisa Rahmadani',  'email' => 'needs@needswo.id'],
-            ['name' => 'Mikael Joshua',   'email' => 'mj@mjstoria.id'],
-            ['name' => 'Rara Anjani',     'email' => 'hello@benangmerah.id'],
-            ['name' => 'Reza Mahendra',   'email' => 'reza@marsproduction.id'],
-            ['name' => 'Gede Adnyana',    'email' => 'gede@endlessproduction.id'],
+            ['name' => 'Dinar Maheswari', 'email' => 'dinar@dinarwo.id'],          // Dinar Wedding Organizer
+            ['name' => 'Nisa Rahmadani',  'email' => 'needs@needswo.id'],          // Needs Wedding Organizer
+            ['name' => 'Lumina Sari',     'email' => 'lumina@luminawo.id'],        // Lumina Wedding Organizer
+            ['name' => 'Galih Pratama',   'email' => 'endless@endlesscreative.id'],// Endless Creative Production
+            ['name' => 'Reza Mahendra',   'email' => 'reza@marsproduction.id'],    // Mars Production
+            ['name' => 'Rara Anjani',     'email' => 'hello@benangmerah.id'],      // Benang Merah
+            ['name' => 'Mikael Joshua',   'email' => 'mj@mjstoria.id'],            // MJ Storia
+            ['name' => 'Wahyu Kuswara',   'email' => 'kuliner@wongkito.id'],       // Kuliner Wong Kito
         ];
         foreach ($vendors as $v) {
             $u = User::firstOrCreate(

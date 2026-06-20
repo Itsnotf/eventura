@@ -14,46 +14,68 @@ class BrandPackagesSeeder extends Seeder
         $cats = ServiceCategories::pluck('id', 'slug')->all();
         $cat  = fn (string $slug): int => $cats[$slug] ?? $cats['lainnya'];
 
-        // brand-slug => [ [name, category-slug, start, end, desc, featured], ... ]
+        // Include bersama untuk brand yang memakai satu daftar fasilitas untuk semua paket.
+        $needsInclude  = 'WO full service, tim 8–12 crew, dekorasi, catering sesuai jumlah tamu, makeup & busana pengantin, MC, live music, dokumentasi, wedding cake, bridal room, dan gladi bersih.';
+        $luminaInclude = 'WO full service, 8–12 crew, catering sesuai jumlah tamu, dekorasi premium, makeup & busana pengantin, MC, live music, dokumentasi, wedding cake, bridal room, dan gladi bersih.';
+        $marsInclude   = 'Event planner, rundown acara, crew 10–20 orang, MC, sound system, lighting, dokumentasi, registration desk, backdrop, LED screen (paket tertentu), dekorasi, dan guest star.';
+
+        $PL  = 'paket-lengkap-full-event-wedding';
+        $KMS = 'konten-media-sosial';
+        $CAT = 'catering';
+
+        // brand-slug => [ [name, category-slug, price_start, price_end, description, is_featured], ... ]
         $data = [
             'dinar-wedding-organizer' => [
-                ['Paket All-In Wedding', 'paket-lengkap-full-event-wedding', 25_000_000, 60_000_000, 'Paket pernikahan menyeluruh 200–400 tamu: koordinasi hari-H, dekorasi ballroom, rias & busana, MC, sound, dokumentasi, dan catering.', true],
-                ['Paket Dekorasi Pelaminan', 'dekorasi', 8_000_000, 18_000_000, 'Dekorasi pelaminan & area resepsi dengan bunga segar, backdrop, dan table setting elegan.', true],
-                ['Paket Catering Prasmanan', 'catering', 15_000_000, 40_000_000, 'Catering prasmanan 200–400 porsi dengan menu nusantara & internasional, lengkap dengan pramusaji.', false],
-                ['Paket Rias Pengantin', 'rias-busana', 4_000_000, 9_000_000, 'Rias pengantin modern/tradisional oleh MUA berpengalaman, termasuk trial dan busana.', false],
-            ],
-            'lumina-wedding-organizer' => [
-                ['Paket Wedding Komplit', 'paket-lengkap-full-event-wedding', 30_000_000, 70_000_000, 'Paket pernikahan komplit dengan konsep modern: perencanaan, dekorasi, hiburan, dan koordinasi penuh.', true],
-                ['Paket Dekorasi Tematik', 'dekorasi', 10_000_000, 22_000_000, 'Dekorasi tematik custom sesuai konsep pasangan, dari rustic hingga elegan minimalis.', true],
-                ['Paket MC & Hiburan', 'mc-hiburan', 3_000_000, 8_000_000, 'MC profesional + band akustik/DJ untuk menghidupkan resepsi.', false],
-                ['Paket Catering Premium', 'catering', 18_000_000, 45_000_000, 'Catering premium dengan live cooking station dan dessert corner.', false],
+                ['Paket Rumahan – 300 Pax', $PL, 35_000_000, null, 'Untuk 300 tamu. Sudah termasuk: WO full service, 6 crew on duty, dekorasi pelaminan standar, makeup pengantin & keluarga inti, busana pengantin, MC, sound system, dokumentasi foto & video, buku tamu & kotak angpao, rundown acara, dan koordinasi vendor.', false],
+                ['Paket Gedung Sukaria – 500 Pax', $PL, 55_000_000, null, 'Untuk 500 tamu. Sudah termasuk: sewa Gedung Sukaria, WO full service, 8 crew, dekorasi premium, makeup & busana pengantin, MC, live music akustik, dokumentasi, sound system, dan gladi bersih.', true],
+                ['Paket Graha Limbersa – 1000 Pax', $PL, 115_000_000, null, 'Untuk 1000 tamu. Sudah termasuk: venue Graha Limbersa, catering 1000 pax, dekorasi premium, 10 crew WO, makeup & busana pengantin, dokumentasi foto video, MC, entertainment, bridal room, dan wedding cake.', true],
+                ['Paket Hotel The Zuri – 700 Pax', $PL, 135_000_000, null, 'Untuk 700 tamu. Sudah termasuk: ballroom The Zuri, catering 700 pax, dekorasi premium, WO full service, MC, live music, dokumentasi, wedding cake, bridal room, dan 10 crew WO.', false],
+                ['Paket Gedung Kebun Gede – 600 Pax', $PL, 70_000_000, null, 'Untuk 600 tamu. Sudah termasuk: Gedung Kebun Gede, catering 600 pax, dekorasi, makeup & busana pengantin, MC, sound system, dokumentasi, dan 8 crew WO.', false],
             ],
             'needs-wedding-organizer' => [
-                ['Paket Wedding Hemat', 'paket-lengkap-full-event-wedding', 20_000_000, 50_000_000, 'Paket pernikahan fleksibel sesuai anggaran, tetap rapi dan berkesan untuk 150–300 tamu.', true],
-                ['Sewa Venue & Gedung', 'venue-gedung', 15_000_000, 40_000_000, 'Koordinasi & sewa gedung/venue mitra dengan kapasitas beragam di Surabaya.', false],
-                ['Paket Rias & Busana', 'rias-busana', 3_500_000, 8_000_000, 'Rias pengantin + sewa busana untuk akad dan resepsi.', false],
-                ['Undangan & Souvenir', 'undangan-souvenir', 2_000_000, 6_000_000, 'Undangan cetak/digital dan souvenir custom sesuai jumlah tamu.', false],
+                ['Paket Rumahan – 350 Pax', $PL, 40_000_000, null, 'Untuk 350 tamu. Sudah termasuk: ' . $needsInclude, false],
+                ['Paket Asrama Haji – 800 Pax', $PL, 100_000_000, null, 'Untuk 800 tamu. Sudah termasuk: ' . $needsInclude, true],
+                ['Paket Canopy Function Hall – 500 Pax', $PL, 75_000_000, null, 'Untuk 500 tamu. Sudah termasuk: ' . $needsInclude, false],
+                ['Paket Dermaga Convention Center – 1000 Pax', $PL, 150_000_000, null, 'Untuk 1000 tamu. Sudah termasuk: ' . $needsInclude, true],
+                ['Paket Hotel Harper – 600 Pax', $PL, 120_000_000, null, 'Untuk 600 tamu. Sudah termasuk: ' . $needsInclude, false],
             ],
-            'mj-storia' => [
-                ['Dokumentasi Silver', 'dokumentasi-foto-video', 4_000_000, 7_000_000, 'Dokumentasi foto pernikahan: 2 fotografer, album digital 150+ foto, siap 21 hari.', true],
-                ['Dokumentasi Gold Cinematic', 'dokumentasi-foto-video', 8_000_000, 15_000_000, 'Foto + video sinematik: 2 fotografer & 1 videografer, highlight 5–7 menit, raw footage.', true],
-                ['Paket Sound System', 'sound-system-lighting', 5_000_000, 12_000_000, 'Sound system & lighting untuk resepsi indoor/outdoor dengan operator.', false],
+            'lumina-wedding-organizer' => [
+                ['Paket Rumahan – 400 Pax', $PL, 45_000_000, null, 'Untuk 400 tamu. Sudah termasuk: ' . $luminaInclude, false],
+                ['Paket Balai Diklat – 500 Pax', $PL, 65_000_000, null, 'Untuk 500 tamu. Sudah termasuk: ' . $luminaInclude, false],
+                ['Paket Mandiri Ballroom – 1000 Pax', $PL, 145_000_000, null, 'Untuk 1000 tamu. Sudah termasuk: ' . $luminaInclude, true],
+                ['Paket OPI Convention Center – 800 Pax', $PL, 120_000_000, null, 'Untuk 800 tamu. Sudah termasuk: ' . $luminaInclude, true],
+                ['Paket Hotel Beston – 650 Pax', $PL, 110_000_000, null, 'Untuk 650 tamu. Sudah termasuk: ' . $luminaInclude, false],
             ],
-            'benang-merah' => [
-                ['Dekorasi Intimate', 'dekorasi', 6_000_000, 14_000_000, 'Dekorasi intimate 50–120 tamu dengan styling rapi dan instagramable.', true],
-                ['Dekorasi Grand', 'dekorasi', 15_000_000, 35_000_000, 'Dekorasi grand untuk ballroom besar: floral installation, lighting, dan panggung.', true],
-                ['Undangan & Souvenir', 'undangan-souvenir', 2_500_000, 7_000_000, 'Undangan custom (cetak/digital) dan souvenir dengan desain serasi tema.', false],
-                ['Styling & Rias Pengantin', 'rias-busana', 4_000_000, 9_000_000, 'Styling pengantin + rias oleh tim berpengalaman, selaras dengan dekorasi.', false],
+            'endless-creative-production' => [
+                ['Seminar Package', $PL, 10_000_000, null, 'Sudah termasuk: event planner, 10 crew, MC, sound system, dokumentasi, registration desk, pembicara, dan dekorasi simple.', false],
+                ['Corporate Gathering Package', $PL, 15_000_000, null, 'Sudah termasuk: 12 crew, MC, backdrop, sound system, dokumentasi, rundown acara, dan dekorasi.', false],
+                ['Birthday Party Package', $PL, 15_000_000, null, 'Untuk 100 tamu, venue di cafe. Sudah termasuk: dekorasi, MC, sound system, dokumentasi, games, dan souvenir.', false],
+                ['Product Launching Package', $PL, 35_000_000, null, 'Sudah termasuk: event organizer, 15 crew, LED screen, lighting, MC, dokumentasi, dekorasi, dan guest star.', true],
+                ['Concert Package', $PL, 100_000_000, null, 'Sudah termasuk: event management, 20 crew, stage, lighting, sound system, LED screen, talent handling, dokumentasi, guest star + rides, dan logistik.', true],
             ],
             'mars-production' => [
-                ['Sound & Lighting Pro', 'sound-system-lighting', 6_000_000, 18_000_000, 'Paket sound system & lighting skala event korporat/konser kecil dengan teknisi.', true],
-                ['MC & Hiburan Event', 'mc-hiburan', 4_000_000, 12_000_000, 'MC profesional + pengisi acara/band untuk gala dan event perusahaan.', false],
-                ['Paket Produksi Event', 'paket-lengkap-full-event-wedding', 35_000_000, 90_000_000, 'Produksi acara menyeluruh: panggung, multimedia, sound, lighting, dan manajemen acara.', true],
+                ['Workshop Package', $PL, 20_000_000, null, 'Sudah termasuk: ' . $marsInclude, false],
+                ['Seminar Nasional Package', $PL, 15_000_000, null, 'Sudah termasuk: ' . $marsInclude, false],
+                ['Gathering Package', $PL, 25_000_000, null, 'Sudah termasuk: ' . $marsInclude, false],
+                ['Anniversary Event Package', $PL, 30_000_000, null, 'Sudah termasuk: ' . $marsInclude, true],
+                ['Music Festival Package', $PL, 120_000_000, null, 'Sudah termasuk: ' . $marsInclude, true],
             ],
-            'endless-production' => [
-                ['Dokumentasi Cinematic', 'dokumentasi-foto-video', 5_000_000, 12_000_000, 'Dokumentasi sinematik pernikahan/acara di Bali dengan pendekatan storytelling.', true],
-                ['Sound & Lighting', 'sound-system-lighting', 5_000_000, 14_000_000, 'Sound system & lighting untuk acara tepi pantai maupun indoor.', false],
-                ['MC & Hiburan', 'mc-hiburan', 3_000_000, 9_000_000, 'MC dwibahasa + hiburan untuk acara dengan tamu lokal & internasional.', false],
+            'benang-merah' => [
+                ['Simpul Package', $KMS, 315_000, null, 'Standby maksimal 2 jam + free 1 jam, 1 reels recap, 7 story Instagram, 1 trend TikTok by request, 1 crew on duty, free random photo, dan all raw files.', false],
+                ['Rajutan Package', $KMS, 400_000, null, 'Standby maksimal 4 jam + free 1 jam, unlimited story, 1 reels recap, BTS content, 2 trend TikTok by request, 1 crew on duty, free random photo, dan all raw files.', true],
+                ['Tenun Package', $KMS, 525_000, null, 'Standby maksimal 7 jam + free 1 jam, unlimited story, 2 reels recap, 1 BTS content, 2 trend TikTok by request, 1 crew on duty, free random photo, dan all raw files.', true],
+            ],
+            'mj-storia' => [
+                ['Memoir Package', $KMS, 315_000, null, 'Benefit setara paket dasar: standby maksimal 2 jam + free 1 jam, 1 reels recap, 7 story Instagram, 1 trend TikTok by request, 1 crew on duty, free random photo, dan all raw files.', false],
+                ['Chronicle Package', $KMS, 400_000, null, 'Benefit setara paket menengah: standby maksimal 4 jam + free 1 jam, unlimited story, 1 reels recap, BTS content, 2 trend TikTok by request, 1 crew on duty, free random photo, dan all raw files.', true],
+                ['Legacy Package', $KMS, 525_000, null, 'Benefit setara paket premium: standby maksimal 7 jam + free 1 jam, unlimited story, 2 reels recap, 1 BTS content, 2 trend TikTok by request, 1 crew on duty, free random photo, dan all raw files.', true],
+            ],
+            'kuliner-wong-kito' => [
+                ['Paket Syukuran', $CAT, 3_500_000, null, '100 porsi. Menu: nasi putih, ayam goreng, sambal, sayur, dan air mineral.', false],
+                ['Paket Arisan Keluarga', $CAT, 6_500_000, null, '150 porsi. Menu: aneka lauk, buah, dessert, dan minuman.', false],
+                ['Paket Ulang Tahun', $CAT, 12_000_000, null, '250 porsi. Menu: buffet, snack box, dessert, dan soft drink.', false],
+                ['Paket Lamaran', $CAT, 18_000_000, null, '300 porsi. Menu khas Palembang: pempek, tekwan, dessert, dengan waiters.', true],
+                ['Paket Pernikahan Wong Kito', $CAT, 45_000_000, null, '500 porsi. Prasmanan lengkap: pempek kapal selam, tekwan, model, es kacang merah, dessert, stall makanan, waiters, dan peralatan makan lengkap.', true],
             ],
         ];
 

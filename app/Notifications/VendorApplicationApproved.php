@@ -21,7 +21,7 @@ class VendorApplicationApproved extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject("Selamat! Aplikasi {$this->brandName} Disetujui — Eventura")
+            ->subject("Selamat! Aplikasi {$this->brandName} Disetujui — " . config('app.name'))
             ->markdown('mail.vendor-application-approved', [
                 'brandName' => $this->brandName,
                 'resetUrl'  => $this->resetUrl,
