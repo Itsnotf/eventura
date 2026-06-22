@@ -38,6 +38,7 @@ class FavoritesController extends Controller
     {
         $brands = Brands::whereHas('favoritedByUsers', fn($q) => $q->where('user_id', Auth::id()))
             ->withMin('packages', 'price_start')
+            ->withAvg('testimonials', 'rating')
             ->latest()
             ->get();
 

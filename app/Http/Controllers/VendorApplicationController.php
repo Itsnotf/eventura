@@ -6,8 +6,6 @@ use App\Http\Requests\VendorApplicationRequest\StoreVendorApplicationRequest;
 use App\Models\Brands;
 use App\Models\User;
 use App\Models\VendorApplications;
-use App\Notifications\VendorApplicationApproved;
-use App\Notifications\VendorApplicationRejected;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -72,6 +70,10 @@ class VendorApplicationController extends Controller implements HasMiddleware
         return Inertia::render('vendor-applications/show', [
             'application'  => $application,
             'documentUrl'  => asset('storage/' . $application->document),
+            'flash'        => [
+                'success'  => session('success'),
+                'whatsapp' => session('whatsapp'),
+            ],
         ]);
     }
 
@@ -120,13 +122,22 @@ class VendorApplicationController extends Controller implements HasMiddleware
             'reviewed_at' => now(),
         ]);
 
-        // Build a password reset token and notify the vendor
         $token    = Password::broker()->createToken($vendor);
         $resetUrl = url(route('password.reset', ['token' => $token, 'email' => $vendor->email], false));
-        $vendor->notify(new VendorApplicationApproved($application->brand_name, $resetUrl));
 
-        return redirect()->route('vendor-applications.index')
-            ->with('success', "Aplikasi {$application->brand_name} disetujui. Undangan dikirim ke {$application->email}.");
+        $waMessage = "Halo {$application->applicant_name}! 🎉\n\n"
+            . "Selamat, aplikasi vendor *{$application->brand_name}* di *" . config('app.name') . "* telah *disetujui*.\n\n"
+            . "Akun Anda sudah aktif. Silakan atur password Anda melalui link di bawah ini untuk mulai login dan melengkapi profil brand:\n"
+            . $resetUrl . "\n\n"
+            . "Link berlaku 60 menit sejak pesan ini dikirim. Jika sudah kedaluwarsa, gunakan fitur \"Lupa Password\" di halaman login.\n\n"
+            . "Terima kasih telah bergabung bersama " . config('app.name') . "!";
+
+        return redirect()->route('vendor-applications.show', $application->id)
+            ->with('success', "Aplikasi {$application->brand_name} disetujui.")
+            ->with('whatsapp', [
+                'phone'   => $application->phone,
+                'message' => $waMessage,
+            ]);
     }
 
     /** Admin: reject application */
@@ -144,17 +155,18 @@ class VendorApplicationController extends Controller implements HasMiddleware
             'reviewed_at' => now(),
         ]);
 
-        // Notify the applicant by email
-        $notification = new VendorApplicationRejected($application->brand_name, $application->applicant_name);
-        $applicant = User::firstWhere('email', $application->email);
-        if ($applicant) {
-            $applicant->notify($notification);
-        } else {
-            \Illuminate\Support\Facades\Notification::route('mail', $application->email)
-                ->notify($notification);
-        }
+        $waMessage = "Halo {$application->applicant_name},\n\n"
+            . "Terima kasih telah mendaftarkan brand *{$application->brand_name}* ke " . config('app.name') . ".\n\n"
+            . "Setelah melalui proses review, kami mohon maaf aplikasi Anda belum dapat kami setujui pada saat ini. "
+            . "Hal ini bisa disebabkan oleh dokumen yang belum lengkap atau belum memenuhi persyaratan kami.\n\n"
+            . "Anda dapat mendaftar kembali kapan saja dengan melengkapi persyaratan yang diperlukan di halaman pendaftaran kami.\n\n"
+            . "Salam,\nTim " . config('app.name');
 
-        return redirect()->route('vendor-applications.index')
-            ->with('success', "Aplikasi {$application->brand_name} ditolak.");
+        return redirect()->route('vendor-applications.show', $application->id)
+            ->with('success', "Aplikasi {$application->brand_name} ditolak.")
+            ->with('whatsapp', [
+                'phone'   => $application->phone,
+                'message' => $waMessage,
+            ]);
     }
 }

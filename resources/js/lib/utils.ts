@@ -46,3 +46,6 @@ export function useRole() {
         hasRole:  (role: string) => roles.includes(role),
     };
 }
+
+export const isMapsEmbed = (v?: string | null): boolean =>
+    !!v && v.startsWith('https://www.google.com/maps/embed');

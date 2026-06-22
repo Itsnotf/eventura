@@ -20,7 +20,7 @@ use App\Http\Controllers\VendorApplicationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LandingController::class, 'home'])->name('home');
-Route::get('/explore', [LandingController::class, 'explore'])->name('explore');
+Route::redirect('/explore', '/')->name('explore');
 Route::get('/brand/{slug}', [LandingController::class, 'brandDetail'])->name('brand.detail');
 Route::get('/brand/{slug}/portfolio/{portfolio}', [LandingController::class, 'portfolioDetail'])->name('brand.portfolio.detail');
 Route::get('/portfolio', [LandingController::class, 'portfolios'])->name('portfolio');

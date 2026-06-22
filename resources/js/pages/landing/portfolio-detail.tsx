@@ -1,5 +1,6 @@
 import { BrandLogo, whatsappUrl } from '@/components/landing/brand-card';
 import LandingLayout from '@/layouts/landing-layout';
+import { isMapsEmbed } from '@/lib/utils';
 import { type Brand, type BrandPortfolio, type ImagePortfolio } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, MessageCircle } from 'lucide-react';
@@ -92,7 +93,7 @@ export default function PortfolioDetailPage({ brand, portfolio }: Props) {
                                     </span>
                                 ))}
                             </div>
-                            {brand.address && (
+                            {brand.address && !isMapsEmbed(brand.address) && (
                                 <p className="text-lp-on-surface-variant text-sm">{brand.address}</p>
                             )}
                         </div>

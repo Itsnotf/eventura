@@ -9,13 +9,10 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
-import hasAnyPermission from '@/lib/utils';
+import hasAnyPermission, { isMapsEmbed } from '@/lib/utils';
 import { Brand, BreadcrumbItem, SharedData } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { BadgeCheck, Edit2Icon, Eye, Globe, Instagram, MapPin, Phone, ShieldOff } from 'lucide-react';
-
-const isMapsEmbed = (v?: string | null) =>
-    !!v && v.startsWith('https://www.google.com/maps/embed');
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 

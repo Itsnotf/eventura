@@ -63,7 +63,7 @@ export default function MyInquiries({ inquiries }: Props) {
                     <div className="rounded-lg border bg-card p-10 text-center space-y-4">
                         <p className="text-muted-foreground">Belum ada inquiry. Temukan vendor dan kirim inquiry pertama Anda.</p>
                         <Link
-                            href="/explore"
+                            href="/"
                             className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2 rounded-md text-sm font-semibold hover:opacity-90 transition-opacity"
                         >
                             <ExternalLink className="h-4 w-4" />
@@ -113,7 +113,7 @@ export default function MyInquiries({ inquiries }: Props) {
 
                 {inquiries.data.length > 0 && (
                     <div className="flex items-center justify-between gap-4 flex-wrap">
-                        <Link href="/explore" className="text-sm text-primary font-semibold hover:underline flex items-center gap-1">
+                        <Link href="/" className="text-sm text-primary font-semibold hover:underline flex items-center gap-1">
                             <ExternalLink className="h-4 w-4" /> Jelajahi lebih banyak vendor
                         </Link>
                         {inquiries.links && (

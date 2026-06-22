@@ -1,5 +1,6 @@
 import { BrandLogo, formatPrice } from '@/components/landing/brand-card';
 import LandingLayout from '@/layouts/landing-layout';
+import { isMapsEmbed } from '@/lib/utils';
 import { type Brand, type BrandPackage } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { ArrowLeft, BadgeCheck, MapPin, MessageCircle, Star } from 'lucide-react';
@@ -45,8 +46,8 @@ export default function ComparePage({ brands }: Props) {
                 <Head title="Bandingkan Brand" />
                 <div className="max-w-[1280px] mx-auto px-4 md:px-12 py-24 text-center">
                     <p className="text-lp-on-surface-variant">Pilih minimal 2 brand untuk dibandingkan.</p>
-                    <Link href="/explore" className="inline-block mt-4 text-lp-primary font-semibold hover:underline">
-                        ← Kembali ke Explore
+                    <Link href="/" className="inline-block mt-4 text-lp-primary font-semibold hover:underline">
+                        ← Kembali ke Beranda
                     </Link>
                 </div>
             </LandingLayout>
@@ -60,9 +61,9 @@ export default function ComparePage({ brands }: Props) {
             <Head title="Bandingkan Brand" />
 
             <div className="max-w-[1280px] mx-auto px-4 md:px-12 py-10">
-                <Link href="/explore" className="inline-flex items-center gap-1.5 text-sm text-lp-on-surface-variant hover:text-lp-primary mb-8">
+                <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-lp-on-surface-variant hover:text-lp-primary mb-8">
                     <ArrowLeft className="h-4 w-4" />
-                    Kembali ke Explore
+                    Kembali ke Beranda
                 </Link>
 
                 <h1 className="font-playfair text-3xl font-bold text-lp-primary mb-8">Perbandingan Brand</h1>
@@ -103,7 +104,13 @@ export default function ComparePage({ brands }: Props) {
                             {brands.map(brand => (
                                 <div key={brand.id} className="p-4 border-l border-lp-outline-variant flex items-start gap-1.5 text-sm text-lp-on-surface-variant">
                                     <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0 text-lp-primary" />
-                                    <span>{brand.address || '–'}</span>
+                                    {isMapsEmbed(brand.address) ? (
+                                        <a href={brand.address} target="_blank" rel="noopener noreferrer" className="text-lp-primary hover:underline text-xs">
+                                            Lihat peta
+                                        </a>
+                                    ) : (
+                                        <span>{brand.address || '–'}</span>
+                                    )}
                                 </div>
                             ))}
                         </div>

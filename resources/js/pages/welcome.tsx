@@ -167,8 +167,8 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
 
             {/* Slim header */}
             <div className="max-w-[1280px] mx-auto px-4 md:px-12 pt-10 pb-4">
-                <h1 className="font-playfair text-4xl font-bold text-lp-primary">Temukan EO &amp; WO Terbaik</h1>
-                <p className="text-lp-on-surface-variant mt-1 text-sm">Jelajahi vendor, bandingkan paket, dan wujudkan acara impian Anda.</p>
+                <h1 className="font-playfair text-4xl font-bold text-lp-primary">Temukan Vendor Acara Terbaik di Palembang</h1>
+                <p className="text-lp-on-surface-variant mt-1 text-sm">Jelajahi EO, WO, Content Creator, dan Catering — bandingkan paket, dan wujudkan acara impian Anda.</p>
             </div>
 
             {/* Sticky filter bar */}

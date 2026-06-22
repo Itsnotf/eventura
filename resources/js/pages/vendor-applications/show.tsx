@@ -1,9 +1,10 @@
 import { ConfirmDialog } from '@/components/confirm-dialog';
+import { whatsappUrl } from '@/components/landing/brand-card';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Download, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { ArrowLeft, Download, MessageCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { useState } from 'react';
 
 interface Application {
@@ -24,7 +25,7 @@ interface Application {
 interface Props {
     application: Application;
     documentUrl: string;
-    flash?: { success?: string };
+    flash?: { success?: string; whatsapp?: { phone: string; message: string } };
 }
 
 const STATUS_BADGE: Record<string, string> = {
@@ -78,6 +79,23 @@ export default function VendorApplicationShow({ application, documentUrl, flash 
                 {flash?.success && (
                     <div className="rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
                         {flash.success}
+                    </div>
+                )}
+
+                {flash?.whatsapp && (
+                    <div className="rounded-lg bg-green-50 border border-green-200 px-4 py-4 flex items-center justify-between gap-4 flex-wrap">
+                        <p className="text-sm text-green-800">
+                            Pesan untuk <strong>{application.applicant_name}</strong> sudah disiapkan. Klik tombol untuk membuka WhatsApp dan kirim.
+                        </p>
+                        <a
+                            href={whatsappUrl(flash.whatsapp.phone, flash.whatsapp.message)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white rounded-md px-4 py-2 text-sm font-medium shrink-0"
+                        >
+                            <MessageCircle className="h-4 w-4" />
+                            Kirim ke WhatsApp
+                        </a>
                     </div>
                 )}
 

@@ -28,7 +28,7 @@ export default function FavoritesPage({ brands }: Props) {
                     <div className="rounded-lg border bg-card p-12 text-center">
                         <Heart className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
                         <p className="text-muted-foreground">Belum ada brand yang Anda simpan sebagai favorit.</p>
-                        <a href="/explore" className="inline-block mt-4 text-sm font-semibold text-primary hover:underline">
+                        <a href="/" className="inline-block mt-4 text-sm font-semibold text-primary hover:underline">
                             Jelajahi brand →
                         </a>
                     </div>

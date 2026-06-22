@@ -25,9 +25,18 @@ export default function AuthSplitLayout({
                     href={home()}
                     className="relative z-20 flex items-center gap-2 text-lg font-playfair font-semibold text-white"
                 >
-                    <AppLogoIcon className="size-8 fill-current text-white" />
+                    <AppLogoIcon tone="white" className="size-8" />
                     {name}
                 </Link>
+                {/* Ilustrasi — mengisi ruang kosong tengah panel */}
+                <div className="relative z-10 flex-1 flex items-center justify-center py-8">
+                    <img
+                        src="/images/brand/auth-illustration.webp"
+                        alt="Ilustrasi dekorasi acara di tepi Sungai Musi, Palembang"
+                        className="max-w-md w-full h-auto select-none pointer-events-none"
+                    />
+                </div>
+
                 <div className="relative z-20 mt-auto space-y-4">
                     <p className="font-playfair text-2xl font-semibold text-white leading-snug">
                         Wujudkan Acara Impian Anda<br />di Palembang
@@ -46,7 +55,7 @@ export default function AuthSplitLayout({
                         href={home()}
                         className="flex items-center justify-center gap-2 lg:hidden"
                     >
-                        <AppLogoIcon className="h-10 fill-current text-lp-primary sm:h-12" />
+                        <AppLogoIcon tone="teal" className="h-10 sm:h-12" />
                     </Link>
 
                     <div className="space-y-1">

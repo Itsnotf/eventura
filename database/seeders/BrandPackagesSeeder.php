@@ -89,7 +89,7 @@ class BrandPackagesSeeder extends Seeder
                     [
                         'service_category_id' => $cat($catSlug),
                         'price_start'         => $start,
-                        'price_end'           => $end,
+                        'price_end'           => $end ?? $start,
                         'description'         => $desc,
                         'cover_image'         => null,
                         'is_featured'         => $featured,

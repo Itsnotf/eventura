@@ -1,4 +1,5 @@
 import AppLayout from '@/layouts/app-layout';
+import { isMapsEmbed } from '@/lib/utils';
 import { Brand, BrandPackage, BrandPortfolio, BreadcrumbItem, User } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { Building2, CalendarDays, ClipboardList, Eye, Heart, Images, MessageCircle, Package, PlusCircle, SendHorizontal, Star, TrendingUp, Users } from 'lucide-react';
@@ -329,7 +330,7 @@ function BrandOwnerDashboard({ brand, stats, recentPackages, recentPortfolios, a
                 <CardContent className="flex flex-col gap-2 pt-6 md:flex-row md:items-center md:justify-between">
                     <div>
                         <h2 className="text-xl font-bold">{brand.name}</h2>
-                        <p className="text-sm text-muted-foreground">{brand.address ?? '-'}</p>
+                        <p className="text-sm text-muted-foreground">{brand.address && !isMapsEmbed(brand.address) ? brand.address : '-'}</p>
                         <div className="mt-2 flex flex-wrap gap-1">
                             {brand.category?.map((cat) => (
                                 <Badge key={cat} variant="outline">{cat}</Badge>
@@ -609,7 +610,7 @@ function CustomerDashboard({ plansCount, favoritesCount, recentInquiries }: {
                     Jelajahi vendor event dan wedding organizer terbaik, simpan favorit, buat rencana acara, dan kirim inquiry — semua dalam satu platform.
                 </p>
                 <div className="flex gap-3">
-                    <Link href="/explore"><Button>Jelajahi Vendor</Button></Link>
+                    <Link href="/"><Button>Jelajahi Vendor</Button></Link>
                 </div>
             </div>
         );
@@ -634,7 +635,7 @@ function CustomerDashboard({ plansCount, favoritesCount, recentInquiries }: {
                         <Heart className="h-4 w-4" /> Vendor Favorit
                     </Button>
                 </Link>
-                <Link href="/explore">
+                <Link href="/">
                     <Button className="w-full gap-2">
                         <Building2 className="h-4 w-4" /> Jelajahi Vendor
                     </Button>

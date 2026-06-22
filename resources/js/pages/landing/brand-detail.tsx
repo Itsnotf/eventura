@@ -2,10 +2,8 @@ import { BrandInitials, BrandLogo, formatPrice, whatsappUrl } from '@/components
 import LandingLayout from '@/layouts/landing-layout';
 import { type Brand, type BrandPackage, type BrandPortfolio, type ImagePortfolio } from '@/types';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { isMapsEmbed } from '@/lib/utils';
 import { ArrowLeft, BadgeCheck, CalendarPlus, Globe, ImageOff, Instagram, MapPin, MessageCircle, Send, Star } from 'lucide-react';
-
-const isMapsEmbed = (v?: string | null) =>
-    !!v && v.startsWith('https://www.google.com/maps/embed');
 import { FormEvent, useRef, useState } from 'react';
 
 function trackWhatsapp(slug: string): void {
@@ -461,9 +459,9 @@ export default function BrandDetailPage({ brand, testimonials, avgRating, review
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
                     {/* About */}
                     <div className="md:col-span-8 space-y-6">
-                        <Link href="/explore" className="inline-flex items-center gap-2 text-lp-secondary hover:text-lp-primary text-sm font-semibold transition-colors group">
+                        <Link href="/" className="inline-flex items-center gap-2 text-lp-secondary hover:text-lp-primary text-sm font-semibold transition-colors group">
                             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-                            Kembali ke Explore
+                            Kembali ke Beranda
                         </Link>
 
                         <div>

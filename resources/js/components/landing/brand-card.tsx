@@ -1,9 +1,22 @@
+import { isMapsEmbed } from '@/lib/utils';
 import { type Auth, type Brand } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
-import { BadgeCheck, Heart, MapPin } from 'lucide-react';
+import { BadgeCheck, Heart, MapPin, Star } from 'lucide-react';
 
 export interface BrandWithStats extends Brand {
     packages_min_price_start?: number | null;
+    testimonials_avg_rating?: number | null;
+}
+
+export function RatingStars({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'md' }) {
+    const starClass = size === 'sm' ? 'h-3.5 w-3.5' : 'h-4 w-4';
+    return (
+        <div className="flex gap-0.5">
+            {[1, 2, 3, 4, 5].map(s => (
+                <Star key={s} className={`${starClass} ${s <= Math.round(rating) ? 'fill-yellow-400 text-yellow-400' : 'text-lp-on-surface-variant/30'}`} />
+            ))}
+        </div>
+    );
 }
 
 export function formatPrice(price: string | number): string {
@@ -110,7 +123,16 @@ export function BrandCard({ brand }: { brand: BrandWithStats }) {
                         </div>
                     </div>
 
-                    {brand.address && (
+                    {brand.testimonials_avg_rating ? (
+                        <div className="flex items-center gap-1.5">
+                            <RatingStars rating={brand.testimonials_avg_rating} />
+                            <span className="text-xs font-semibold text-lp-on-surface">{Number(brand.testimonials_avg_rating).toFixed(1)}</span>
+                        </div>
+                    ) : (
+                        <p className="text-lp-on-surface-variant text-xs italic">Belum ada rating</p>
+                    )}
+
+                    {brand.address && !isMapsEmbed(brand.address) && (
                         <p className="text-lp-on-surface-variant text-sm flex items-center gap-1">
                             <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
                             <span className="truncate">{brand.address}</span>
