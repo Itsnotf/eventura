@@ -11,7 +11,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { toast } from 'sonner';
 import { BreadcrumbItem, BrandPortfolio, ImagePortfolio, SharedData } from '@/types';
 import { Edit2Icon, Trash2Icon, Calendar, Image as ImageIcon, Upload, AlertCircle } from 'lucide-react';
@@ -45,11 +45,6 @@ export default function BrandPortfolioShowPage({ brandPortfolio }: Props) {
     const [uploadError, setUploadError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const getCsrfToken = (): string => {
-        const meta = document.querySelector('meta[name="csrf-token"]');
-        return meta?.getAttribute('content') || '';
-    };
-
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Brand Portfolios',
@@ -61,74 +56,44 @@ export default function BrandPortfolioShowPage({ brandPortfolio }: Props) {
         },
     ];
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
         setUploadingImageId(Math.random());
         setUploadError(null);
-        const formData = new FormData();
-        formData.append('image', file);
 
-        try {
-            const response = await fetch(`/brand-portfolios/${brandPortfolio.id}/images`, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': getCsrfToken(),
+        router.post(
+            `/brand-portfolios/${brandPortfolio.id}/images`,
+            { image: file },
+            {
+                forceFormData: true,
+                preserveScroll: true,
+                onSuccess: () => {
+                    if (fileInputRef.current) fileInputRef.current.value = '';
+                    setUploadingImageId(null);
                 },
-            });
-
-            if (!response.ok) {
-                let errorData: any;
-                try {
-                    errorData = await response.json();
-                } catch {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText || 'Unknown error'}`);
-                }
-                throw errorData;
-            }
-
-            if (fileInputRef.current) {
-                fileInputRef.current.value = '';
-            }
-            window.location.reload();
-        } catch (error: any) {
-            setUploadingImageId(null);
-            const errorMsg = error?.errors?.image?.[0] ?? error?.image?.[0] ?? error?.message ?? 'Failed to upload image';
-            setUploadError(errorMsg);
-        }
+                onError: (errors) => {
+                    setUploadingImageId(null);
+                    const errorMsg = errors?.image ?? errors?.message ?? 'Failed to upload image';
+                    setUploadError(errorMsg);
+                },
+            },
+        );
     };
 
-    const handleDeleteImage = async (imageId: number) => {
+    const handleDeleteImage = (imageId: number) => {
         setDeletingImageId(imageId);
 
-        try {
-            const response = await fetch(`/brand-portfolios/${brandPortfolio.id}/images/${imageId}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': getCsrfToken(),
-                },
-            });
-
-            if (!response.ok) {
-                let errorData: any;
-                try {
-                    errorData = await response.json();
-                } catch {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText || 'Unknown error'}`);
-                }
-                throw errorData;
-            }
-
-            window.location.reload();
-        } catch (error: any) {
-            setDeletingImageId(null);
-            const errorMsg = error?.message ?? 'Failed to delete image';
-            toast.error(`Gagal menghapus gambar: ${errorMsg}`);
-        }
+        router.delete(`/brand-portfolios/${brandPortfolio.id}/images/${imageId}`, {
+            preserveScroll: true,
+            onSuccess: () => setDeletingImageId(null),
+            onError: (errors) => {
+                setDeletingImageId(null);
+                const errorMsg = errors?.message ?? 'Failed to delete image';
+                toast.error(`Gagal menghapus gambar: ${errorMsg}`);
+            },
+        });
     };
 
     const formatDate = (date: string) => {

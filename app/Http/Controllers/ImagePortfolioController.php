@@ -31,16 +31,10 @@ class ImagePortfolioController extends Controller
                 'image' => $path,
             ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Image uploaded successfully',
-            ]);
+            return redirect()->back();
         }
 
-        return response()->json([
-            'success' => false,
-            'message' => 'No image provided',
-        ], 400);
+        return redirect()->back()->withErrors(['image' => 'No image provided']);
     }
 
     /**
@@ -58,9 +52,6 @@ class ImagePortfolioController extends Controller
 
         $image->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Image deleted successfully',
-        ]);
+        return redirect()->back();
     }
 }
