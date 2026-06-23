@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 class BrandsController extends Controller implements HasMiddleware
@@ -123,6 +124,8 @@ class BrandsController extends Controller implements HasMiddleware
             "is_active" => $request->is_active ?? true,
         ]);
 
+        Cache::forget('featured_brands');
+
         return redirect()->route('brands.index')->with('success', 'Brand created successfully.');
     }
 
@@ -195,6 +198,8 @@ class BrandsController extends Controller implements HasMiddleware
             "is_active" => $request->is_active ?? $brand->is_active,
         ]);
 
+        Cache::forget('featured_brands');
+
         return redirect()->route('brands.index')->with('success', 'Brand updated successfully.');
     }
 
@@ -205,6 +210,8 @@ class BrandsController extends Controller implements HasMiddleware
     {
         $brand = Brands::findOrFail($id);
         $brand->delete();
+
+        Cache::forget('featured_brands');
 
         return redirect()->route('brands.index')->with('success', 'Brand deleted successfully.');
     }

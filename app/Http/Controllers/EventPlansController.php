@@ -70,7 +70,7 @@ class EventPlansController extends Controller implements HasMiddleware
         ]);
     }
 
-    /** Add a package to the plan (max 1 per service_category) */
+    /** Add a package to the plan */
     public function addItem(Request $request, string $id)
     {
         $plan = EventPlans::where('user_id', Auth::id())->findOrFail($id);
@@ -80,17 +80,6 @@ class EventPlansController extends Controller implements HasMiddleware
         ]);
 
         $package = BrandPackages::with(['brand', 'serviceCategory'])->findOrFail($data['brand_package_id']);
-
-        // Enforce 1 package per category per plan
-        if ($package->service_category_id) {
-            $exists = EventPlanItems::where('event_plan_id', $plan->id)
-                ->where('service_category_id', $package->service_category_id)
-                ->exists();
-
-            if ($exists) {
-                return back()->with('error', 'Kategori layanan ini sudah ada dalam rencana. Hapus paket lama terlebih dahulu.');
-            }
-        }
 
         EventPlanItems::create([
             'event_plan_id'         => $plan->id,

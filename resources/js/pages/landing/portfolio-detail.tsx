@@ -59,18 +59,39 @@ export default function PortfolioDetailPage({ brand, portfolio }: Props) {
                     </div>
                 )}
 
-                {/* Masonry gallery */}
+                {/* Adaptive gallery */}
                 {portfolio.images.length > 0 ? (
-                    <div className="masonry-grid mb-12">
-                        {portfolio.images.map((image) => (
-                            <div key={image.id} className="masonry-item rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(18,67,65,0.08)] group">
+                    <div className="mb-12">
+                        {portfolio.images.length === 1 ? (
+                            <div className="rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(18,67,65,0.08)] group">
                                 <img
-                                    src={`/storage/${image.image}`}
+                                    src={`/storage/${portfolio.images[0].image}`}
                                     alt={portfolio.title}
-                                    className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500"
+                                    className="w-full max-h-[600px] object-cover group-hover:scale-105 transition-transform duration-500"
                                 />
                             </div>
-                        ))}
+                        ) : (
+                            <div
+                                className={`grid gap-4 md:gap-6 ${
+                                    portfolio.images.length === 2
+                                        ? 'grid-cols-1 sm:grid-cols-2'
+                                        : 'grid-cols-2 lg:grid-cols-3'
+                                }`}
+                            >
+                                {portfolio.images.map((image) => (
+                                    <div
+                                        key={image.id}
+                                        className="aspect-[4/3] rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(18,67,65,0.08)] group"
+                                    >
+                                        <img
+                                            src={`/storage/${image.image}`}
+                                            alt={portfolio.title}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <div className="text-center py-16 text-lp-on-surface-variant mb-12">

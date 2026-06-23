@@ -169,19 +169,3 @@
 .table-cell-flex {
     @apply flex-1;
 }
-
-/* Masonry layout for portfolio gallery */
-.masonry-grid {
-    columns: 1;
-    column-gap: 1.5rem;
-}
-@media (min-width: 768px) {
-    .masonry-grid { columns: 2; }
-}
-@media (min-width: 1024px) {
-    .masonry-grid { columns: 3; }
-}
-.masonry-item {
-    break-inside: avoid;
-    margin-bottom: 1.5rem;
-}

@@ -26,19 +26,6 @@ function Stars({ rating }: { rating: number }) {
     );
 }
 
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
-    return (
-        <div className="grid grid-cols-[180px_1fr] gap-0 border-b border-lp-outline-variant last:border-0">
-            <div className="p-4 bg-lp-surface-container-low text-xs font-semibold text-lp-on-surface-variant uppercase tracking-wider flex items-center">
-                {label}
-            </div>
-            <div className="p-4">
-                {children}
-            </div>
-        </div>
-    );
-}
-
 export default function ComparePage({ brands }: Props) {
     if (brands.length < 2) {
         return (
@@ -54,7 +41,11 @@ export default function ComparePage({ brands }: Props) {
         );
     }
 
-    const colWidth = brands.length === 2 ? 'w-1/2' : 'w-1/3';
+    // Kolom label sticky (140px) + kolom brand minmax agar bisa scroll horizontal di mobile,
+    // tetap melebar mengisi ruang di desktop.
+    const gridStyle = { gridTemplateColumns: `140px repeat(${brands.length}, minmax(150px, 1fr))` };
+    const labelCell =
+        'sticky left-0 z-10 p-4 bg-lp-surface-container-low border-r border-lp-outline-variant text-xs font-semibold text-lp-on-surface-variant uppercase tracking-wider flex items-center';
 
     return (
         <LandingLayout>
@@ -68,10 +59,10 @@ export default function ComparePage({ brands }: Props) {
 
                 <h1 className="font-playfair text-3xl font-bold text-lp-primary mb-8">Perbandingan Brand</h1>
 
-                <div className="rounded-xl border border-lp-outline-variant overflow-hidden">
+                <div className="overflow-x-auto rounded-xl border border-lp-outline-variant">
                     {/* Brand header row */}
-                    <div className="grid border-b border-lp-outline-variant" style={{ gridTemplateColumns: `180px repeat(${brands.length}, 1fr)` }}>
-                        <div className="p-4 bg-lp-surface-container-low" />
+                    <div className="grid border-b border-lp-outline-variant" style={gridStyle}>
+                        <div className="sticky left-0 z-10 p-4 bg-lp-surface-container-low border-r border-lp-outline-variant" />
                         {brands.map(brand => (
                             <div key={brand.id} className="p-5 flex flex-col items-center gap-3 text-center border-l border-lp-outline-variant">
                                 <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-lp-outline-variant">
@@ -84,7 +75,7 @@ export default function ComparePage({ brands }: Props) {
                                         </Link>
                                         {brand.is_verified && <BadgeCheck className="h-4 w-4 text-lp-primary flex-shrink-0" />}
                                     </div>
-                                    <div className="flex gap-1 justify-center mt-1">
+                                    <div className="flex flex-wrap gap-1 justify-center mt-1">
                                         {brand.category?.map(c => (
                                             <span key={c} className="bg-lp-surface-container-high text-lp-primary px-2 py-0.5 rounded-full text-xs font-medium">{c}</span>
                                         ))}
@@ -97,10 +88,8 @@ export default function ComparePage({ brands }: Props) {
                     {/* Compare rows */}
                     <div>
                         {/* Lokasi */}
-                        <div className="grid border-b border-lp-outline-variant" style={{ gridTemplateColumns: `180px repeat(${brands.length}, 1fr)` }}>
-                            <div className="p-4 bg-lp-surface-container-low text-xs font-semibold text-lp-on-surface-variant uppercase tracking-wider flex items-center">
-                                Lokasi
-                            </div>
+                        <div className="grid border-b border-lp-outline-variant" style={gridStyle}>
+                            <div className={labelCell}>Lokasi</div>
                             {brands.map(brand => (
                                 <div key={brand.id} className="p-4 border-l border-lp-outline-variant flex items-start gap-1.5 text-sm text-lp-on-surface-variant">
                                     <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0 text-lp-primary" />
@@ -116,10 +105,8 @@ export default function ComparePage({ brands }: Props) {
                         </div>
 
                         {/* Harga mulai */}
-                        <div className="grid border-b border-lp-outline-variant" style={{ gridTemplateColumns: `180px repeat(${brands.length}, 1fr)` }}>
-                            <div className="p-4 bg-lp-surface-container-low text-xs font-semibold text-lp-on-surface-variant uppercase tracking-wider flex items-center">
-                                Harga Mulai
-                            </div>
+                        <div className="grid border-b border-lp-outline-variant" style={gridStyle}>
+                            <div className={labelCell}>Harga Mulai</div>
                             {brands.map(brand => (
                                 <div key={brand.id} className="p-4 border-l border-lp-outline-variant text-center">
                                     {brand.packages_min_price_start ? (
@@ -132,10 +119,8 @@ export default function ComparePage({ brands }: Props) {
                         </div>
 
                         {/* Rating */}
-                        <div className="grid border-b border-lp-outline-variant" style={{ gridTemplateColumns: `180px repeat(${brands.length}, 1fr)` }}>
-                            <div className="p-4 bg-lp-surface-container-low text-xs font-semibold text-lp-on-surface-variant uppercase tracking-wider flex items-center">
-                                Rating
-                            </div>
+                        <div className="grid border-b border-lp-outline-variant" style={gridStyle}>
+                            <div className={labelCell}>Rating</div>
                             {brands.map(brand => (
                                 <div key={brand.id} className="p-4 border-l border-lp-outline-variant flex flex-col items-center gap-1">
                                     {brand.testimonials_avg_rating ? (
@@ -152,10 +137,8 @@ export default function ComparePage({ brands }: Props) {
                         </div>
 
                         {/* Verifikasi */}
-                        <div className="grid border-b border-lp-outline-variant" style={{ gridTemplateColumns: `180px repeat(${brands.length}, 1fr)` }}>
-                            <div className="p-4 bg-lp-surface-container-low text-xs font-semibold text-lp-on-surface-variant uppercase tracking-wider flex items-center">
-                                Terverifikasi
-                            </div>
+                        <div className="grid border-b border-lp-outline-variant" style={gridStyle}>
+                            <div className={labelCell}>Terverifikasi</div>
                             {brands.map(brand => (
                                 <div key={brand.id} className="p-4 border-l border-lp-outline-variant flex items-center justify-center">
                                     {brand.is_verified ? (
@@ -170,10 +153,8 @@ export default function ComparePage({ brands }: Props) {
                         </div>
 
                         {/* Jumlah paket */}
-                        <div className="grid border-b border-lp-outline-variant" style={{ gridTemplateColumns: `180px repeat(${brands.length}, 1fr)` }}>
-                            <div className="p-4 bg-lp-surface-container-low text-xs font-semibold text-lp-on-surface-variant uppercase tracking-wider flex items-center">
-                                Jumlah Paket
-                            </div>
+                        <div className="grid border-b border-lp-outline-variant" style={gridStyle}>
+                            <div className={labelCell}>Jumlah Paket</div>
                             {brands.map(brand => (
                                 <div key={brand.id} className="p-4 border-l border-lp-outline-variant text-center text-sm font-semibold text-lp-on-surface">
                                     {brand.packages?.length ?? 0}
@@ -182,8 +163,8 @@ export default function ComparePage({ brands }: Props) {
                         </div>
 
                         {/* CTA row */}
-                        <div className="grid" style={{ gridTemplateColumns: `180px repeat(${brands.length}, 1fr)` }}>
-                            <div className="p-4 bg-lp-surface-container-low" />
+                        <div className="grid" style={gridStyle}>
+                            <div className="sticky left-0 z-10 p-4 bg-lp-surface-container-low border-r border-lp-outline-variant" />
                             {brands.map(brand => (
                                 <div key={brand.id} className="p-4 border-l border-lp-outline-variant flex items-center justify-center">
                                     <Link
