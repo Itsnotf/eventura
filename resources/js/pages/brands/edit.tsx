@@ -186,6 +186,7 @@ export default function BrandEditPage({ brand, users }: Props) {
                                     defaultValue={brand.description}
                                     placeholder="Brand description"
                                     rows={4}
+                                    required
                                 />
                                 <InputError message={errors.description} />
                             </div>
@@ -198,6 +199,7 @@ export default function BrandEditPage({ brand, users }: Props) {
                                     defaultValue={brand.address}
                                     placeholder='<iframe src="https://www.google.com/maps/embed?..." ...></iframe>'
                                     rows={4}
+                                    required
                                 />
                                 <p className="text-xs text-muted-foreground">
                                     Buka Google Maps → pilih lokasi → Bagikan → tab &ldquo;Sematkan peta&rdquo; → salin &amp; tempel kode di sini.
@@ -213,6 +215,7 @@ export default function BrandEditPage({ brand, users }: Props) {
                                     name="whatsapp_number"
                                     defaultValue={brand.whatsapp_number}
                                     placeholder="+62812345678900"
+                                    required
                                 />
                                 <InputError message={errors.whatsapp_number} />
                             </div>

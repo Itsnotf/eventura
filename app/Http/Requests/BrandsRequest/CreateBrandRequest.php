@@ -27,6 +27,16 @@ class CreateBrandRequest extends FormRequest
         }
     }
 
+    public function messages(): array
+    {
+        return [
+            'description.required'     => 'Deskripsi wajib diisi.',
+            'address.required'         => 'Lokasi (embed Google Maps) wajib diisi.',
+            'address.starts_with'      => 'Embed maps tidak valid — pastikan kamu menempel kode embed dari Google Maps.',
+            'whatsapp_number.required' => 'Nomor WhatsApp wajib diisi.',
+        ];
+    }
+
     public function rules(): array
     {
         return [
@@ -37,9 +47,9 @@ class CreateBrandRequest extends FormRequest
             'category.*' => 'in:EO,WO,CC,Catering',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'description' => 'nullable|string',
-            'address' => ['nullable', 'string', 'starts_with:https://www.google.com/maps/embed'],
-            'whatsapp_number' => 'nullable|string|max:20',
+            'description' => 'required|string',
+            'address' => ['required', 'string', 'starts_with:https://www.google.com/maps/embed'],
+            'whatsapp_number' => 'required|string|max:20',
             'instagram' => 'nullable|string|max:255',
             'website' => 'nullable|string|max:255',
             'is_active' => 'nullable|in:0,1',
