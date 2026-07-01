@@ -34,10 +34,6 @@ class LandingController extends Controller
             $query->whereJsonContains('category', $request->category);
         }
 
-        if ($request->filled('city')) {
-            $query->where('address', 'like', '%' . $request->city . '%');
-        }
-
         if ($request->filled('verified') && $request->verified === '1') {
             $query->where('is_verified', true);
         }
@@ -68,7 +64,7 @@ class LandingController extends Controller
         $brands = $query->paginate(12)->withQueryString();
 
         // Only fetch featured segment when no filters are active
-        $hasFilters = $request->hasAny(['search', 'category', 'city', 'verified', 'min_price', 'max_price', 'min_rating']);
+        $hasFilters = $request->hasAny(['search', 'category', 'verified', 'min_price', 'max_price', 'min_rating']);
         $featuredBrands = [];
         if (!$hasFilters) {
             $featuredBrands = Cache::remember('featured_brands', 600, function () {
@@ -106,69 +102,8 @@ class LandingController extends Controller
 
         return Inertia::render('welcome', [
             'brands'         => $brands,
-            'filters'        => (object) $request->only(['search', 'category', 'city', 'verified', 'min_price', 'max_price', 'min_rating', 'sort']),
+            'filters'        => (object) $request->only(['search', 'category', 'verified', 'min_price', 'max_price', 'min_rating', 'sort']),
             'featuredBrands' => $featuredBrands,
-        ]);
-    }
-
-    public function explore(Request $request)
-    {
-        $query = Brands::where('is_active', true)
-            ->withMin('packages', 'price_start')
-            ->withAvg('testimonials', 'rating');
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('address', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->filled('category') && in_array($request->category, ['EO', 'WO', 'CC', 'Catering'])) {
-            $query->whereJsonContains('category', $request->category);
-        }
-
-        if ($request->filled('city')) {
-            $query->where('address', 'like', '%' . $request->city . '%');
-        }
-
-        if ($request->filled('verified') && $request->verified === '1') {
-            $query->where('is_verified', true);
-        }
-
-        if ($request->filled('min_price')) {
-            $query->whereHas('packages', fn($q) => $q->where('price_start', '>=', (int) $request->min_price));
-        }
-
-        if ($request->filled('max_price')) {
-            $query->whereHas('packages', fn($q) => $q->where('price_start', '<=', (int) $request->max_price));
-        }
-
-        if ($request->filled('min_rating')) {
-            $query->withAvg('testimonials', 'rating')
-                ->having('testimonials_avg_rating', '>=', (float) $request->min_rating);
-        }
-
-        $sort = $request->get('sort', 'latest');
-
-        if ($sort === 'price_asc') {
-            $query->orderBy('packages_min_price_start');
-        } elseif ($sort === 'name') {
-            $query->orderBy('name');
-        } elseif ($sort === 'rating') {
-            $query->orderByDesc('testimonials_avg_rating');
-        } else {
-            $query->latest();
-        }
-
-        $brands = $query->paginate(12)->withQueryString();
-
-        return Inertia::render('landing/explore', [
-            'brands'  => $brands,
-            // Cast to object so empty result serializes as {} not [] in JSON.
-            // [] (PHP empty array) → "[]" (JSON array) → filters.sort resolves to Array.prototype.sort → useState crash.
-            'filters' => (object) $request->only(['search', 'category', 'city', 'verified', 'min_price', 'max_price', 'min_rating', 'sort']),
         ]);
     }
 

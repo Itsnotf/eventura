@@ -21,6 +21,8 @@ import { useRef } from 'react';
 const VENDOR_TYPES = [
     { value: 'EO', label: 'Event Organizer', desc: 'Menangani berbagai jenis acara (konser, seminar, pameran, dll.)' },
     { value: 'WO', label: 'Wedding Organizer', desc: 'Spesialis pernikahan dan acara terkait' },
+    { value: 'CC', label: 'Content Creator', desc: 'Dokumentasi foto, video, dan konten kreatif untuk acara' },
+    { value: 'Catering', label: 'Catering', desc: 'Penyedia layanan konsumsi dan katering acara' },
 ];
 
 const REQUIREMENTS = [

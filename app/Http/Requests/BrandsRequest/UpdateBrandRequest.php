@@ -34,6 +34,8 @@ class UpdateBrandRequest extends FormRequest
             'address.required'         => 'Lokasi (embed Google Maps) wajib diisi.',
             'address.starts_with'      => 'Embed maps tidak valid — pastikan kamu menempel kode embed dari Google Maps.',
             'whatsapp_number.required' => 'Nomor WhatsApp wajib diisi.',
+            'company_profile_video.mimes' => 'Video profil harus berformat MP4, MOV, atau WebM.',
+            'company_profile_video.max'   => 'Ukuran video profil maksimal 50MB.',
         ];
     }
 
@@ -49,6 +51,7 @@ class UpdateBrandRequest extends FormRequest
             'category.*' => 'in:EO,WO,CC,Catering',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'company_profile_video' => 'nullable|file|mimes:mp4,mov,webm|max:51200',
             'description' => 'required|string',
             'address' => ['required', 'string', 'starts_with:https://www.google.com/maps/embed'],
             'whatsapp_number' => 'required|string|max:20',

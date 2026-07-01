@@ -132,6 +132,18 @@ export default function BrandPortfolioEditPage({ brandPortfolio, brands }: Props
                                 <InputError message={errors.deskripsi} />
                             </div>
 
+                            <div className="grid gap-2 md:col-span-2">
+                                <Label htmlFor="video">Video Portfolio (opsional)</Label>
+                                <Input
+                                    id="video"
+                                    type="file"
+                                    name="video"
+                                    accept="video/mp4,video/quicktime,video/webm"
+                                />
+                                <p className="text-sm text-gray-500">Leave empty to keep current video</p>
+                                <InputError message={errors.video} />
+                            </div>
+
                             <div className='space-x-2 md:col-span-2'>
                                 <Button type="submit" className="mt-2 w-fit">
                                     {processing ? (

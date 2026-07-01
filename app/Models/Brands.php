@@ -16,6 +16,7 @@ class Brands extends Model
         'category',
         'logo',
         'cover_image',
+        'company_profile_video',
         'description',
         'address',
         'whatsapp_number',

@@ -19,7 +19,7 @@ class StoreVendorApplicationRequest extends FormRequest
             'phone'          => ['required', 'string', 'max:20'],
             'brand_name'     => ['required', 'string', 'max:255'],
             'category'       => ['required', 'array', 'min:1'],
-            'category.*'     => ['in:EO,WO'],
+            'category.*'     => ['in:EO,WO,CC,Catering'],
             'message'        => ['nullable', 'string', 'max:2000'],
             'document'       => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
         ];

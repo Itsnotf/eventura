@@ -14,7 +14,7 @@ import AppLayout from '@/layouts/app-layout';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { toast } from 'sonner';
 import { BreadcrumbItem, BrandPortfolio, ImagePortfolio, SharedData } from '@/types';
-import { Edit2Icon, Trash2Icon, Calendar, Image as ImageIcon, Upload, AlertCircle } from 'lucide-react';
+import { Edit2Icon, Trash2Icon, Calendar, Image as ImageIcon, Upload, AlertCircle, Video as VideoIcon } from 'lucide-react';
 import hasAnyPermission from '@/lib/utils';
 import DeleteButton from '@/components/delete-button';
 import {
@@ -227,6 +227,23 @@ export default function BrandPortfolioShowPage({ brandPortfolio }: Props) {
                         </CardContent>
                     </Card>
                 )}
+
+                {/* Video Section */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <VideoIcon className="w-5 h-5" />
+                            Video Portfolio
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        {brandPortfolio.video ? (
+                            <video src={`/storage/${brandPortfolio.video}`} controls className="w-full max-h-[400px] rounded-lg bg-black" />
+                        ) : (
+                            <p className="text-gray-500 text-sm">Belum ada video. Tambahkan lewat halaman Edit.</p>
+                        )}
+                    </CardContent>
+                </Card>
 
                 {/* Portfolio Images Section */}
                 <Card>

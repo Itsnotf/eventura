@@ -14,6 +14,7 @@ class BrandPortfolios extends Model
         'title',
         'event_type',
         'event_date',
+        'video',
     ];
 
     public function brand()

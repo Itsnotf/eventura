@@ -1,10 +1,11 @@
 import { BrandInitials, BrandLogo, formatPrice, whatsappUrl } from '@/components/landing/brand-card';
+import { PortfolioThumbnail } from '@/components/landing/portfolio-thumbnail';
 import LandingLayout from '@/layouts/landing-layout';
 import { type Brand, type BrandPackage, type BrandPortfolio, type ImagePortfolio } from '@/types';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { isMapsEmbed } from '@/lib/utils';
-import { ArrowLeft, BadgeCheck, CalendarPlus, Globe, ImageOff, Instagram, MapPin, MessageCircle, Send, Star } from 'lucide-react';
-import { FormEvent, useRef, useState } from 'react';
+import { ArrowLeft, BadgeCheck, CalendarPlus, Globe, ImageOff, Instagram, MapPin, MessageCircle, Send, Star, X } from 'lucide-react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 
 function trackWhatsapp(slug: string): void {
     const token = (document.cookie.match(/XSRF-TOKEN=([^;]+)/) ?? [])[1];
@@ -12,6 +13,73 @@ function trackWhatsapp(slug: string): void {
         method: 'POST',
         headers: { 'X-XSRF-TOKEN': token ? decodeURIComponent(token) : '' },
     }).catch(() => {});
+}
+
+function CompanyProfileVideoModal({ brandId, videoPath }: { brandId: number; videoPath: string }) {
+    const [visible, setVisible] = useState(false);
+    const [secondsLeft, setSecondsLeft] = useState(5);
+    const canClose = secondsLeft <= 0;
+
+    useEffect(() => {
+        const storageKey = `eventura_video_watched_${brandId}`;
+        if (localStorage.getItem(storageKey)) return;
+        setVisible(true);
+    }, [brandId]);
+
+    useEffect(() => {
+        if (!visible) return;
+        setSecondsLeft(5);
+        const interval = setInterval(() => setSecondsLeft((s) => (s > 0 ? s - 1 : 0)), 1000);
+        return () => clearInterval(interval);
+    }, [visible]);
+
+    useEffect(() => {
+        if (!visible || canClose) return;
+        function blockEscape(e: KeyboardEvent) {
+            if (e.key === 'Escape') e.preventDefault();
+        }
+        document.addEventListener('keydown', blockEscape);
+        return () => document.removeEventListener('keydown', blockEscape);
+    }, [visible, canClose]);
+
+    function handleClose() {
+        if (!canClose) return;
+        localStorage.setItem(`eventura_video_watched_${brandId}`, '1');
+        setVisible(false);
+    }
+
+    if (!visible) return null;
+
+    return (
+        <div
+            className="fixed inset-0 z-[999] bg-black/90 flex items-center justify-center p-4"
+            onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
+        >
+            <div className="relative w-full max-w-3xl">
+                <video
+                    src={`/storage/${videoPath}`}
+                    autoPlay
+                    muted
+                    playsInline
+                    controls={canClose}
+                    onEnded={() => setSecondsLeft(0)}
+                    className="w-full max-h-[80vh] rounded-lg"
+                />
+                <button
+                    onClick={handleClose}
+                    disabled={!canClose}
+                    aria-label="Tutup"
+                    className={`absolute -top-11 right-0 md:top-3 md:right-3 h-9 w-9 rounded-full flex items-center justify-center text-sm font-semibold transition-colors ${
+                        canClose
+                            ? 'bg-white text-lp-on-surface hover:bg-lp-surface-container-low cursor-pointer'
+                            : 'bg-white/30 text-white cursor-not-allowed'
+                    }`}
+                >
+                    {canClose ? <X className="h-5 w-5" /> : secondsLeft}
+                </button>
+            </div>
+        </div>
+    );
 }
 
 interface PortfolioWithImage extends BrandPortfolio {
@@ -377,26 +445,13 @@ function PackageCard({ pkg, whatsapp, slug, eventPlans }: { pkg: BrandPackage; w
 }
 
 function PortfolioThumb({ portfolio, brandSlug }: { portfolio: PortfolioWithImage; brandSlug: string }) {
-    const thumb = portfolio.images?.[0];
-
     return (
         <Link href={`/brand/${brandSlug}/portfolio/${portfolio.id}`} className="group block">
-            <div className="relative w-full h-52 rounded-xl overflow-hidden mb-3 bg-lp-surface-container">
-                {thumb ? (
-                    <img
-                        src={`/storage/${thumb.image}`}
-                        alt={portfolio.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center text-lp-on-surface-variant text-sm">
-                        Tidak ada foto
-                    </div>
-                )}
+            <PortfolioThumbnail portfolio={portfolio} className="w-full h-52 rounded-xl mb-3">
                 <div className="absolute top-3 left-3 bg-lp-surface/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-medium text-lp-on-surface">
                     {portfolio.event_type}
                 </div>
-            </div>
+            </PortfolioThumbnail>
             <h4 className="font-playfair font-semibold text-lp-on-surface group-hover:text-lp-primary transition-colors text-base leading-snug mb-1">
                 {portfolio.title}
             </h4>
@@ -416,6 +471,10 @@ export default function BrandDetailPage({ brand, testimonials, avgRating, review
     return (
         <LandingLayout>
             <Head title={brand.name} />
+
+            {brand.company_profile_video && (
+                <CompanyProfileVideoModal brandId={brand.id} videoPath={brand.company_profile_video} />
+            )}
 
             {/* Hero cover */}
             <section className="relative w-full h-[400px] md:h-[480px] bg-lp-surface-container">
@@ -472,6 +531,18 @@ export default function BrandDetailPage({ brand, testimonials, avgRating, review
                                 <p className="text-lp-on-surface-variant italic">Deskripsi belum tersedia.</p>
                             )}
                         </div>
+
+                        {brand.company_profile_video && (
+                            <div>
+                                <h2 className="font-playfair text-2xl font-semibold text-lp-on-surface mb-3">Video Profil</h2>
+                                <video
+                                    src={`/storage/${brand.company_profile_video}`}
+                                    controls
+                                    poster={brand.cover_image ? `/storage/${brand.cover_image}` : undefined}
+                                    className="w-full max-h-[400px] rounded-xl bg-black"
+                                />
+                            </div>
+                        )}
 
                         {brand.address && (
                             <div className="space-y-3">

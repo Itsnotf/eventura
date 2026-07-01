@@ -161,6 +161,18 @@ export default function BrandPortfolioCreatePage({ brands }: Props) {
                                 <InputError message={errors.deskripsi} />
                             </div>
 
+                            <div className="grid gap-2 md:col-span-2">
+                                <Label htmlFor="video">Video Portfolio (opsional)</Label>
+                                <Input
+                                    id="video"
+                                    type="file"
+                                    name="video"
+                                    accept="video/mp4,video/quicktime,video/webm"
+                                />
+                                <p className="text-xs text-muted-foreground">MP4/MOV/WebM, maks 30MB. Foto tetap diunggah terpisah setelah portfolio dibuat.</p>
+                                <InputError message={errors.video} />
+                            </div>
+
                             <div className='space-x-2 md:col-span-2'>
                                 <Button type="submit" className="mt-2 w-fit">
                                     {processing ? (

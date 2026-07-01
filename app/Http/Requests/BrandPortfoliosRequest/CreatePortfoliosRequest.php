@@ -27,6 +27,15 @@ class CreatePortfoliosRequest extends FormRequest
             'title' => 'required|string',
             'event_type' => 'required|string',
             'event_date' => 'required|date',
+            'video' => 'nullable|file|mimes:mp4,mov,webm|max:30720',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'video.mimes' => 'Video portfolio harus berformat MP4, MOV, atau WebM.',
+            'video.max'   => 'Ukuran video portfolio maksimal 30MB.',
         ];
     }
 }

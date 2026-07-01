@@ -116,6 +116,7 @@ class BrandsController extends Controller implements HasMiddleware
             "category" => $request->category,
             "logo" => $request->logo ? $request->file('logo')->store('brands', 'public') : null,
             "cover_image" => $request->cover_image ? $request->file('cover_image')->store('brands', 'public') : null,
+            "company_profile_video" => $request->company_profile_video ? $request->file('company_profile_video')->store('brands/videos', 'public') : null,
             "description" => $request->description,
             "address" => $request->address,
             "whatsapp_number" => $request->whatsapp_number,
@@ -141,6 +142,7 @@ class BrandsController extends Controller implements HasMiddleware
             'brand' => $brand,
             'logoUrl' => $brand->logo ? asset('storage/' . $brand->logo) : null,
             'coverImageUrl' => $brand->cover_image ? asset('storage/' . $brand->cover_image) : null,
+            'companyProfileVideoUrl' => $brand->company_profile_video ? asset('storage/' . $brand->company_profile_video) : null,
             'flash' => [
                 'success' => session('success'),
             ],
@@ -190,6 +192,7 @@ class BrandsController extends Controller implements HasMiddleware
             "category" => $request->category,
             "logo" => $request->logo ? $request->file('logo')->store('brands', 'public') : $brand->logo,
             "cover_image" => $request->cover_image ? $request->file('cover_image')->store('brands', 'public') : $brand->cover_image,
+            "company_profile_video" => $request->company_profile_video ? $request->file('company_profile_video')->store('brands/videos', 'public') : $brand->company_profile_video,
             "description" => $request->description,
             "address" => $request->address,
             "whatsapp_number" => $request->whatsapp_number,

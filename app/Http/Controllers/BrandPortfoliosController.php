@@ -94,6 +94,10 @@ class BrandPortfoliosController extends Controller implements HasMiddleware
         }
 
         $validated = $request->validated();
+        $validated['video'] = $request->hasFile('video')
+            ? $request->file('video')->store('brand-portfolios/videos', 'public')
+            : null;
+
         BrandPortfolios::create($validated);
 
         return redirect()->route('brand-portfolios.index')->with('success', 'Brand Portfolio created successfully.');
@@ -145,6 +149,10 @@ class BrandPortfoliosController extends Controller implements HasMiddleware
         }
 
         $validated = $request->validated();
+        $validated['video'] = $request->hasFile('video')
+            ? $request->file('video')->store('brand-portfolios/videos', 'public')
+            : $brandPortfolio->video;
+
         $brandPortfolio->update($validated);
 
         return redirect()->route('brand-portfolios.index')->with('success', 'Brand Portfolio updated successfully.');

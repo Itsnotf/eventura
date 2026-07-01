@@ -59,6 +59,16 @@ export default function PortfolioDetailPage({ brand, portfolio }: Props) {
                     </div>
                 )}
 
+                {portfolio.video && (
+                    <div className="mb-10">
+                        <video
+                            src={`/storage/${portfolio.video}`}
+                            controls
+                            className="w-full max-h-[500px] rounded-xl bg-black"
+                        />
+                    </div>
+                )}
+
                 {/* Adaptive gallery */}
                 {portfolio.images.length > 0 ? (
                     <div className="mb-12">

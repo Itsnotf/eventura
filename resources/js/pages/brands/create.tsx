@@ -120,7 +120,7 @@ export default function BrandCreatePage({ users }: Props) {
 
                             <div className="grid gap-2 md:col-span-1">
                                 <Label>Category</Label>
-                                <div className="flex items-center space-x-4">
+                                <div className="flex items-center flex-wrap gap-4">
                                     <div className="flex items-center space-x-2">
                                         <Checkbox
                                             id="category_eo"
@@ -136,6 +136,14 @@ export default function BrandCreatePage({ users }: Props) {
                                             value="WO"
                                         />
                                         <Label htmlFor="category_wo" className="font-normal cursor-pointer">WO</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox id="category_cc" name="category[]" value="CC" />
+                                        <Label htmlFor="category_cc" className="font-normal cursor-pointer">CC</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox id="category_catering" name="category[]" value="Catering" />
+                                        <Label htmlFor="category_catering" className="font-normal cursor-pointer">Catering</Label>
                                     </div>
                                 </div>
                                 {categoryError && <p className="text-sm text-red-500">{categoryError}</p>}
@@ -245,6 +253,18 @@ export default function BrandCreatePage({ users }: Props) {
                                     accept="image/*"
                                 />
                                 <InputError message={errors.cover_image} />
+                            </div>
+
+                            <div className="grid gap-2 md:col-span-1">
+                                <Label htmlFor="company_profile_video">Video Profil Perusahaan</Label>
+                                <Input
+                                    id="company_profile_video"
+                                    type="file"
+                                    name="company_profile_video"
+                                    accept="video/mp4,video/quicktime,video/webm"
+                                />
+                                <p className="text-xs text-muted-foreground">MP4/MOV/WebM, maks 50MB. Diputar otomatis ke pengunjung saat pertama kali membuka halaman brand ini.</p>
+                                <InputError message={errors.company_profile_video} />
                             </div>
 
                             <div className='space-x-2 md:col-span-2'>

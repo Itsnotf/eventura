@@ -15,7 +15,6 @@ interface PaginatedBrands {
 interface Filters {
     search?: string;
     category?: string;
-    city?: string;
     verified?: string;
     min_price?: string;
     max_price?: string;
@@ -33,6 +32,8 @@ const CATEGORIES = [
     { value: '', label: 'Semua' },
     { value: 'EO', label: 'Event Organizer' },
     { value: 'WO', label: 'Wedding Organizer' },
+    { value: 'CC', label: 'Content Creator' },
+    { value: 'Catering', label: 'Catering' },
 ];
 
 const SORT_OPTIONS = [
@@ -92,7 +93,6 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
 
     const [search, setSearch] = useState(f.search ?? '');
     const [category, setCategory] = useState(f.category ?? '');
-    const [city, setCity] = useState(f.city ?? '');
     const [verified, setVerified] = useState(f.verified ?? '');
     const [minPrice, setMinPrice] = useState(f.min_price ?? '');
     const [maxPrice, setMaxPrice] = useState(f.max_price ?? '');
@@ -105,7 +105,6 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
         const params: Record<string, string | number> = {};
         if (search) params.search = search;
         if (category) params.category = category;
-        if (city) params.city = city;
         if (verified) params.verified = verified;
         if (minPrice) params.min_price = minPrice;
         if (maxPrice) params.max_price = maxPrice;
@@ -115,7 +114,7 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
         Object.assign(params, overrides);
         Object.keys(params).forEach(k => { if (!params[k]) delete params[k]; });
         router.get('/', params, { preserveState: true, only: ['brands', 'filters'] });
-    }, [search, category, city, verified, minPrice, maxPrice, minRating, sort]);
+    }, [search, category, verified, minPrice, maxPrice, minRating, sort]);
 
     useEffect(() => {
         const timer = setTimeout(() => applyFilter({}), 500);
@@ -125,7 +124,6 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
     function handleFilter(key: string, value: string) {
         const setters: Record<string, (v: string) => void> = {
             category: setCategory,
-            city: setCity,
             verified: setVerified,
             min_price: setMinPrice,
             max_price: setMaxPrice,
@@ -158,7 +156,7 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
         });
     }
 
-    const activeFilterCount = [category, city, verified, minPrice, maxPrice, minRating].filter(Boolean).length;
+    const activeFilterCount = [category, verified, minPrice, maxPrice, minRating].filter(Boolean).length;
     const hasActiveFilters = activeFilterCount > 0 || !!search;
 
     return (
@@ -175,12 +173,12 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
             <div className="sticky top-20 z-40 bg-lp-surface/95 backdrop-blur-md border-b border-lp-outline-variant shadow-[0_4px_20px_rgba(18,67,65,0.06)]">
                 <div className="max-w-[1280px] mx-auto px-4 md:px-12 py-3 flex flex-col md:flex-row gap-3 items-stretch md:items-center">
                     {/* Category tabs */}
-                    <div className="flex bg-lp-surface-container rounded-lg p-1 gap-1">
+                    <div className="flex bg-lp-surface-container rounded-lg p-1 gap-1 overflow-x-auto">
                         {CATEGORIES.map((cat) => (
                             <button
                                 key={cat.value}
                                 onClick={() => handleFilter('category', cat.value)}
-                                className={`flex-1 md:flex-none px-4 py-2 rounded text-sm font-semibold transition-colors ${
+                                className={`flex-shrink-0 px-4 py-2 rounded text-sm font-semibold transition-colors ${
                                     category === cat.value
                                         ? 'bg-lp-primary text-lp-on-primary shadow-sm'
                                         : 'text-lp-on-surface-variant hover:text-lp-primary hover:bg-lp-surface-container-low'
@@ -198,7 +196,7 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Cari nama brand atau kota..."
+                            placeholder="Cari nama brand..."
                             className="w-full pl-9 pr-4 py-2 bg-lp-surface-container-lowest border border-lp-outline-variant rounded-lg text-sm text-lp-on-surface placeholder:text-lp-outline focus:border-lp-primary focus:ring-2 focus:ring-lp-primary/10 outline-none"
                         />
                     </div>
@@ -225,16 +223,6 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
                 {/* Expanded advanced filters */}
                 {showFilters && (
                     <div className="max-w-[1280px] mx-auto px-4 md:px-12 pb-4 flex flex-wrap gap-4">
-                        <div>
-                            <label className="block text-xs text-lp-on-surface-variant mb-1">Kota</label>
-                            <input
-                                value={city}
-                                onChange={e => setCity(e.target.value)}
-                                onBlur={() => applyFilter({ city })}
-                                placeholder="Jakarta, Bali, dll."
-                                className="rounded-lg border border-lp-outline-variant px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lp-primary/10"
-                            />
-                        </div>
                         <div>
                             <label className="block text-xs text-lp-on-surface-variant mb-1">Harga Mulai</label>
                             <input

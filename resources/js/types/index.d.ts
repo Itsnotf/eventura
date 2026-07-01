@@ -70,9 +70,10 @@ export interface Brand {
     user_id: number;
     name: string;
     slug: string;
-    category: ('EO' | 'WO')[];
+    category: ('EO' | 'WO' | 'CC' | 'Catering')[];
     logo: string;
     cover_image: string;
+    company_profile_video: string | null;
     description: string;
     address: string;
     whatsapp_number: string;
@@ -110,6 +111,7 @@ export interface BrandPortfolio {
     title: string;
     event_type: string;
     event_date: string;
+    video: string | null;
     created_at: string;
     updated_at: string;
     brand : Brand;

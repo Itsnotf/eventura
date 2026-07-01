@@ -1,4 +1,5 @@
 import { BrandInitials, BrandLogo } from '@/components/landing/brand-card';
+import { PortfolioThumbnail } from '@/components/landing/portfolio-thumbnail';
 import LandingLayout from '@/layouts/landing-layout';
 import { type Brand, type BrandPortfolio, type ImagePortfolio } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
@@ -24,7 +25,6 @@ interface Props {
 }
 
 function PortfolioCard({ portfolio }: { portfolio: PortfolioWithBrandAndImage }) {
-    const thumb = portfolio.images?.[0];
     const eventDate = new Date(portfolio.event_date).toLocaleDateString('id-ID', {
         year: 'numeric',
         month: 'short',
@@ -35,22 +35,15 @@ function PortfolioCard({ portfolio }: { portfolio: PortfolioWithBrandAndImage })
         <Link href={`/brand/${portfolio.brand.slug}/portfolio/${portfolio.id}`} className="block group">
             <article className="bg-lp-surface-container-lowest rounded-xl border border-lp-outline-variant shadow-[0_4px_20px_rgba(18,67,65,0.08)] overflow-hidden hover:shadow-[0_8px_30px_rgba(18,67,65,0.14)] transition-all duration-300 hover:-translate-y-1">
                 {/* Thumbnail */}
-                <div className="relative h-52 overflow-hidden bg-lp-surface-container">
-                    {thumb ? (
-                        <img
-                            src={`/storage/${thumb.image}`}
-                            alt={portfolio.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                    ) : (
-                        <BrandInitials name={portfolio.brand.name} className="w-full h-full text-4xl" />
-                    )}
-
-                    {/* Event type badge */}
+                <PortfolioThumbnail
+                    portfolio={portfolio}
+                    className="h-52"
+                    fallback={<BrandInitials name={portfolio.brand.name} className="w-full h-full text-4xl" />}
+                >
                     <div className="absolute top-3 left-3 bg-lp-surface/90 backdrop-blur-sm px-2.5 py-1 rounded-lg text-xs font-semibold text-lp-on-surface">
                         {portfolio.event_type}
                     </div>
-                </div>
+                </PortfolioThumbnail>
 
                 {/* Content */}
                 <div className="p-4">

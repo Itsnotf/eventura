@@ -20,6 +20,7 @@ interface Props {
     brand: Brand;
     logoUrl?: string | null;
     coverImageUrl?: string | null;
+    companyProfileVideoUrl?: string | null;
     flash?: {
         success?: string;
     };
@@ -31,6 +32,7 @@ export default function BrandShowPage({
     brand,
     logoUrl,
     coverImageUrl,
+    companyProfileVideoUrl,
     flash,
 }: Props) {
     const user = usePage<SharedData>().props.auth.user;
@@ -204,6 +206,22 @@ export default function BrandShowPage({
                         </CardContent>
                     </Card>
                 </div>
+
+                {/* Company Profile Video */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg">Video Profil Perusahaan</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex min-h-[200px] items-center justify-center rounded-md bg-gray-50 p-4">
+                        {companyProfileVideoUrl ? (
+                            <video src={companyProfileVideoUrl} controls className="max-h-[300px] w-full rounded" />
+                        ) : (
+                            <div className="text-center text-gray-400">
+                                <p className="text-sm">Belum ada video profil</p>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
 
                 {/* Basic Information */}
                 <Card>
