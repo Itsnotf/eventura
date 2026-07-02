@@ -462,6 +462,23 @@ function PortfolioThumb({ portfolio, brandSlug }: { portfolio: PortfolioWithImag
     );
 }
 
+function MobileWhatsAppBar({ brand }: { brand: BrandWithRelations }) {
+    return (
+        <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-lp-surface border-t border-lp-outline-variant shadow-[0_-4px_20px_rgba(18,67,65,0.12)] p-3">
+            <a
+                href={whatsappUrl(brand.whatsapp_number, `Halo, saya tertarik dengan brand ${brand.name}`)}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackWhatsapp(brand.slug)}
+                className="w-full bg-[#25D366] text-white py-3 px-4 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+            >
+                <MessageCircle className="h-4 w-4" />
+                Chat via WhatsApp
+            </a>
+        </div>
+    );
+}
+
 export default function BrandDetailPage({ brand, testimonials, avgRating, reviewsCount, userHasTestimonial, userEventPlans, unavailableDates }: Props) {
     const { auth } = usePage().props as { auth?: AuthProps };
     const isLoggedIn = !!auth?.user;
@@ -477,7 +494,7 @@ export default function BrandDetailPage({ brand, testimonials, avgRating, review
             )}
 
             {/* Hero cover */}
-            <section className="relative w-full h-[400px] md:h-[480px] bg-lp-surface-container">
+            <section className="relative w-full h-[260px] sm:h-[360px] md:h-[480px] bg-lp-surface-container">
                 {brand.cover_image ? (
                     <img src={`/storage/${brand.cover_image}`} alt={brand.name} className="w-full h-full object-cover" />
                 ) : (
@@ -651,7 +668,7 @@ export default function BrandDetailPage({ brand, testimonials, avgRating, review
             )}
 
             {/* Testimonials */}
-            <section className="bg-lp-surface-container-low py-14">
+            <section className="bg-lp-surface-container-low pt-14 pb-24 md:py-14">
                 <div className="max-w-[1280px] mx-auto px-4 md:px-12">
                     {/* Header */}
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
@@ -701,6 +718,8 @@ export default function BrandDetailPage({ brand, testimonials, avgRating, review
                     </div>
                 </div>
             </section>
+
+            {hasWhatsApp && <MobileWhatsAppBar brand={brand} />}
         </LandingLayout>
     );
 }

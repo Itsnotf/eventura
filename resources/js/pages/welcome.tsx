@@ -1,4 +1,6 @@
 import { BrandCard, type BrandWithStats } from '@/components/landing/brand-card';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { useIsMobile } from '@/hooks/use-mobile';
 import LandingLayout from '@/layouts/landing-layout';
 import { Head, Link, router } from '@inertiajs/react';
 import { BadgeCheck, ChevronLeft, ChevronRight, GitCompare, Search, SlidersHorizontal, Star, X } from 'lucide-react';
@@ -88,6 +90,69 @@ function CompareBar({ brands, onRemove, onClear }: {
     );
 }
 
+function FilterFields({
+    minPrice, setMinPrice, maxPrice, setMaxPrice, minRating, verified,
+    applyFilter, handleFilter,
+}: {
+    minPrice: string;
+    setMinPrice: (v: string) => void;
+    maxPrice: string;
+    setMaxPrice: (v: string) => void;
+    minRating: string;
+    verified: string;
+    applyFilter: (overrides: Partial<Record<string, string | number>>) => void;
+    handleFilter: (key: string, value: string) => void;
+}) {
+    return (
+        <>
+            <div>
+                <label className="block text-xs text-lp-on-surface-variant mb-1">Harga Mulai</label>
+                <input
+                    type="number"
+                    value={minPrice}
+                    onChange={e => setMinPrice(e.target.value)}
+                    onBlur={() => applyFilter({ min_price: minPrice })}
+                    placeholder="0"
+                    className="w-32 rounded-lg border border-lp-outline-variant px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lp-primary/10"
+                />
+            </div>
+            <div>
+                <label className="block text-xs text-lp-on-surface-variant mb-1">Harga Maks</label>
+                <input
+                    type="number"
+                    value={maxPrice}
+                    onChange={e => setMaxPrice(e.target.value)}
+                    onBlur={() => applyFilter({ max_price: maxPrice })}
+                    placeholder="999999999"
+                    className="w-32 rounded-lg border border-lp-outline-variant px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lp-primary/10"
+                />
+            </div>
+            <div>
+                <label className="block text-xs text-lp-on-surface-variant mb-1">Min Rating</label>
+                <select
+                    value={minRating}
+                    onChange={e => handleFilter('min_rating', e.target.value)}
+                    className="rounded-lg border border-lp-outline-variant px-3 py-1.5 text-sm focus:outline-none"
+                >
+                    {RATING_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                </select>
+            </div>
+            <div className="flex items-end">
+                <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                        type="checkbox"
+                        checked={verified === '1'}
+                        onChange={e => handleFilter('verified', e.target.checked ? '1' : '')}
+                        className="rounded"
+                    />
+                    <BadgeCheck className="h-4 w-4 text-lp-primary" />
+                    <span className="text-sm text-lp-on-surface">Terverifikasi saja</span>
+                </label>
+            </div>
+        </>
+    );
+}
+
 export default function Welcome({ brands, filters, featuredBrands }: Props) {
     const f: Filters = Array.isArray(filters) ? {} : filters;
 
@@ -99,6 +164,7 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
     const [minRating, setMinRating] = useState(f.min_rating ?? '');
     const [sort, setSort] = useState(f.sort ?? 'latest');
     const [showFilters, setShowFilters] = useState(false);
+    const isMobile = useIsMobile();
     const [compareList, setCompareList] = useState<BrandWithStats[]>([]);
 
     const applyFilter = useCallback((overrides: Partial<Record<string, string | number>>, page?: number) => {
@@ -221,53 +287,39 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
                 </div>
 
                 {/* Expanded advanced filters */}
-                {showFilters && (
-                    <div className="max-w-[1280px] mx-auto px-4 md:px-12 pb-4 flex flex-wrap gap-4">
-                        <div>
-                            <label className="block text-xs text-lp-on-surface-variant mb-1">Harga Mulai</label>
-                            <input
-                                type="number"
-                                value={minPrice}
-                                onChange={e => setMinPrice(e.target.value)}
-                                onBlur={() => applyFilter({ min_price: minPrice })}
-                                placeholder="0"
-                                className="w-32 rounded-lg border border-lp-outline-variant px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lp-primary/10"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-xs text-lp-on-surface-variant mb-1">Harga Maks</label>
-                            <input
-                                type="number"
-                                value={maxPrice}
-                                onChange={e => setMaxPrice(e.target.value)}
-                                onBlur={() => applyFilter({ max_price: maxPrice })}
-                                placeholder="999999999"
-                                className="w-32 rounded-lg border border-lp-outline-variant px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lp-primary/10"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-xs text-lp-on-surface-variant mb-1">Min Rating</label>
-                            <select
-                                value={minRating}
-                                onChange={e => handleFilter('min_rating', e.target.value)}
-                                className="rounded-lg border border-lp-outline-variant px-3 py-1.5 text-sm focus:outline-none"
-                            >
-                                {RATING_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                            </select>
-                        </div>
-                        <div className="flex items-end">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="checkbox"
-                                    checked={verified === '1'}
-                                    onChange={e => handleFilter('verified', e.target.checked ? '1' : '')}
-                                    className="rounded"
+                {isMobile ? (
+                    <Sheet open={showFilters} onOpenChange={setShowFilters}>
+                        <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
+                            <SheetHeader>
+                                <SheetTitle>Filter</SheetTitle>
+                            </SheetHeader>
+                            <div className="flex flex-col gap-4 px-4 pb-6">
+                                <FilterFields
+                                    minPrice={minPrice} setMinPrice={setMinPrice}
+                                    maxPrice={maxPrice} setMaxPrice={setMaxPrice}
+                                    minRating={minRating} verified={verified}
+                                    applyFilter={applyFilter} handleFilter={handleFilter}
                                 />
-                                <BadgeCheck className="h-4 w-4 text-lp-primary" />
-                                <span className="text-sm text-lp-on-surface">Terverifikasi saja</span>
-                            </label>
+                                <button
+                                    onClick={() => setShowFilters(false)}
+                                    className="bg-lp-primary text-lp-on-primary py-3 rounded-lg text-sm font-semibold mt-2"
+                                >
+                                    Terapkan Filter
+                                </button>
+                            </div>
+                        </SheetContent>
+                    </Sheet>
+                ) : (
+                    showFilters && (
+                        <div className="max-w-[1280px] mx-auto px-4 md:px-12 pb-4 flex flex-wrap gap-4">
+                            <FilterFields
+                                minPrice={minPrice} setMinPrice={setMinPrice}
+                                maxPrice={maxPrice} setMaxPrice={setMaxPrice}
+                                minRating={minRating} verified={verified}
+                                applyFilter={applyFilter} handleFilter={handleFilter}
+                            />
                         </div>
-                    </div>
+                    )
                 )}
             </div>
 
@@ -313,10 +365,10 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
                                     <BrandCard brand={brand} />
                                     <button
                                         onClick={() => toggleCompare(brand)}
-                                        className={`absolute top-3 left-3 z-10 rounded-full p-1.5 shadow transition-colors ${compareList.find(b => b.id === brand.id) ? 'bg-lp-primary text-lp-on-primary' : 'bg-white/90 text-lp-on-surface-variant hover:bg-lp-primary hover:text-lp-on-primary'}`}
+                                        className={`absolute top-2 left-2 z-10 w-11 h-11 flex items-center justify-center rounded-full shadow transition-colors ${compareList.find(b => b.id === brand.id) ? 'bg-lp-primary text-lp-on-primary' : 'bg-white/90 text-lp-on-surface-variant hover:bg-lp-primary hover:text-lp-on-primary'}`}
                                         title="Bandingkan"
                                     >
-                                        <GitCompare className="h-3.5 w-3.5" />
+                                        <GitCompare className="h-4 w-4" />
                                     </button>
                                 </div>
                             ))}

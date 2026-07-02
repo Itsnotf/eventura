@@ -85,7 +85,7 @@ export default function PortfolioDetailPage({ brand, portfolio }: Props) {
                                 className={`grid gap-4 md:gap-6 ${
                                     portfolio.images.length === 2
                                         ? 'grid-cols-1 sm:grid-cols-2'
-                                        : 'grid-cols-2 lg:grid-cols-3'
+                                        : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
                                 }`}
                             >
                                 {portfolio.images.map((image) => (
