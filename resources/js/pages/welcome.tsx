@@ -1,9 +1,10 @@
 import { BrandCard, type BrandWithStats } from '@/components/landing/brand-card';
+import { Pagination } from '@/components/landing/pagination';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import LandingLayout from '@/layouts/landing-layout';
 import { Head, Link, router } from '@inertiajs/react';
-import { BadgeCheck, ChevronLeft, ChevronRight, GitCompare, Search, SlidersHorizontal, Star, X } from 'lucide-react';
+import { BadgeCheck, GitCompare, Search, SlidersHorizontal, Star, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 interface PaginatedBrands {
@@ -68,18 +69,18 @@ function CompareBar({ brands, onRemove, onClear }: {
                     {brands.map(b => (
                         <div key={b.id} className="flex items-center gap-1.5 bg-lp-surface-container-low rounded-full px-3 py-1 text-xs font-medium">
                             {b.name}
-                            <button onClick={() => onRemove(b.id)} className="text-lp-on-surface-variant hover:text-lp-primary">
+                            <button onClick={() => onRemove(b.id)} className="p-1.5 -m-1.5 text-lp-on-surface-variant hover:text-lp-primary" aria-label={`Hapus ${b.name} dari perbandingan`}>
                                 <X className="h-3 w-3" />
                             </button>
                         </div>
                     ))}
                 </div>
                 <div className="flex gap-2">
-                    <button onClick={onClear} className="text-xs text-lp-on-surface-variant hover:text-lp-primary">Bersihkan</button>
+                    <button onClick={onClear} className="text-xs text-lp-on-surface-variant hover:text-lp-primary py-2 px-2">Bersihkan</button>
                     {brands.length >= 2 && (
                         <Link
                             href={`/compare?ids=${brands.map(b => b.id).join(',')}`}
-                            className="bg-lp-primary text-lp-on-primary px-4 py-1.5 rounded-full text-xs font-semibold hover:opacity-90"
+                            className="bg-lp-primary text-lp-on-primary px-5 py-2.5 rounded-full text-sm font-semibold hover:opacity-90 active:scale-[0.98] transition-transform"
                         >
                             Bandingkan →
                         </Link>
@@ -92,7 +93,7 @@ function CompareBar({ brands, onRemove, onClear }: {
 
 function FilterFields({
     minPrice, setMinPrice, maxPrice, setMaxPrice, minRating, verified,
-    applyFilter, handleFilter,
+    applyFilter, handleFilter, variant = 'inline',
 }: {
     minPrice: string;
     setMinPrice: (v: string) => void;
@@ -102,43 +103,56 @@ function FilterFields({
     verified: string;
     applyFilter: (overrides: Partial<Record<string, string | number>>) => void;
     handleFilter: (key: string, value: string) => void;
+    variant?: 'inline' | 'sheet';
 }) {
+    const sheet = variant === 'sheet';
+    const inputClass = sheet
+        ? 'w-full rounded-lg border border-lp-outline-variant px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-lp-primary/10'
+        : 'w-32 rounded-lg border border-lp-outline-variant px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lp-primary/10';
+    const selectClass = sheet
+        ? 'w-full rounded-lg border border-lp-outline-variant px-3 py-2.5 text-sm focus:outline-none'
+        : 'rounded-lg border border-lp-outline-variant px-3 py-1.5 text-sm focus:outline-none';
+
     return (
         <>
-            <div>
-                <label className="block text-xs text-lp-on-surface-variant mb-1">Harga Mulai</label>
-                <input
-                    type="number"
-                    value={minPrice}
-                    onChange={e => setMinPrice(e.target.value)}
-                    onBlur={() => applyFilter({ min_price: minPrice })}
-                    placeholder="0"
-                    className="w-32 rounded-lg border border-lp-outline-variant px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lp-primary/10"
-                />
-            </div>
-            <div>
-                <label className="block text-xs text-lp-on-surface-variant mb-1">Harga Maks</label>
-                <input
-                    type="number"
-                    value={maxPrice}
-                    onChange={e => setMaxPrice(e.target.value)}
-                    onBlur={() => applyFilter({ max_price: maxPrice })}
-                    placeholder="999999999"
-                    className="w-32 rounded-lg border border-lp-outline-variant px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-lp-primary/10"
-                />
+            <div className={sheet ? 'grid grid-cols-2 gap-3' : 'contents'}>
+                <div>
+                    <label className="block text-xs text-lp-on-surface-variant mb-1">Harga Mulai</label>
+                    <input
+                        type="number"
+                        inputMode="numeric"
+                        value={minPrice}
+                        onChange={e => setMinPrice(e.target.value)}
+                        onBlur={() => applyFilter({ min_price: minPrice })}
+                        placeholder="0"
+                        className={inputClass}
+                    />
+                </div>
+                <div>
+                    <label className="block text-xs text-lp-on-surface-variant mb-1">Harga Maks</label>
+                    <input
+                        type="number"
+                        inputMode="numeric"
+                        value={maxPrice}
+                        onChange={e => setMaxPrice(e.target.value)}
+                        onBlur={() => applyFilter({ max_price: maxPrice })}
+                        placeholder="999999999"
+                        className={inputClass}
+                    />
+                </div>
             </div>
             <div>
                 <label className="block text-xs text-lp-on-surface-variant mb-1">Min Rating</label>
                 <select
                     value={minRating}
                     onChange={e => handleFilter('min_rating', e.target.value)}
-                    className="rounded-lg border border-lp-outline-variant px-3 py-1.5 text-sm focus:outline-none"
+                    className={selectClass}
                 >
                     {RATING_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                 </select>
             </div>
             <div className="flex items-end">
-                <label className="flex items-center gap-2 cursor-pointer">
+                <label className="flex items-center gap-2 cursor-pointer py-1">
                     <input
                         type="checkbox"
                         checked={verified === '1'}
@@ -179,7 +193,7 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
         if (page) params.page = page;
         Object.assign(params, overrides);
         Object.keys(params).forEach(k => { if (!params[k]) delete params[k]; });
-        router.get('/', params, { preserveState: true, only: ['brands', 'filters'] });
+        router.get('/', params, { preserveState: true, preserveScroll: true, only: ['brands', 'filters'] });
     }, [search, category, verified, minPrice, maxPrice, minRating, sort]);
 
     useEffect(() => {
@@ -202,17 +216,6 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
 
     function goToPage(page: number) { applyFilter({}, page); }
 
-    function buildPages(): (number | '...')[] {
-        const pages: (number | '...')[] = [];
-        const total = brands.last_page;
-        const current = brands.current_page;
-        for (let i = 1; i <= total; i++) {
-            if (i === 1 || i === total || Math.abs(i - current) <= 1) pages.push(i);
-            else if (pages[pages.length - 1] !== '...') pages.push('...');
-        }
-        return pages;
-    }
-
     function toggleCompare(brand: BrandWithStats) {
         setCompareList(prev => {
             const exists = prev.find(b => b.id === brand.id);
@@ -231,15 +234,15 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
 
             {/* Slim header */}
             <div className="max-w-[1280px] mx-auto px-4 md:px-12 pt-10 pb-4">
-                <h1 className="font-playfair text-4xl font-bold text-lp-primary">Temukan Vendor Acara Terbaik di Palembang</h1>
+                <h1 className="font-playfair text-3xl md:text-4xl font-bold text-lp-primary">Temukan Vendor Acara Terbaik di Palembang</h1>
                 <p className="text-lp-on-surface-variant mt-1 text-sm">Jelajahi EO, WO, Content Creator, dan Catering — bandingkan paket, dan wujudkan acara impian Anda.</p>
             </div>
 
             {/* Sticky filter bar */}
             <div className="sticky top-20 z-40 bg-lp-surface/95 backdrop-blur-md border-b border-lp-outline-variant shadow-[0_4px_20px_rgba(18,67,65,0.06)]">
-                <div className="max-w-[1280px] mx-auto px-4 md:px-12 py-3 flex flex-col md:flex-row gap-3 items-stretch md:items-center">
+                <div className="max-w-[1280px] mx-auto px-4 md:px-12 py-3 flex gap-3 items-center">
                     {/* Category tabs */}
-                    <div className="flex bg-lp-surface-container rounded-lg p-1 gap-1 overflow-x-auto">
+                    <div className="hidden md:flex bg-lp-surface-container rounded-lg p-1 gap-1 overflow-x-auto">
                         {CATEGORIES.map((cat) => (
                             <button
                                 key={cat.value}
@@ -271,7 +274,7 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
                     <select
                         value={sort}
                         onChange={e => handleFilter('sort', e.target.value)}
-                        className="bg-lp-surface-container-lowest border border-lp-outline-variant rounded-lg px-3 py-2 text-sm text-lp-on-surface focus:outline-none focus:ring-2 focus:ring-lp-primary/10"
+                        className="hidden md:block bg-lp-surface-container-lowest border border-lp-outline-variant rounded-lg px-3 py-2 text-sm text-lp-on-surface focus:outline-none focus:ring-2 focus:ring-lp-primary/10"
                     >
                         {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                     </select>
@@ -294,15 +297,46 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
                                 <SheetTitle>Filter</SheetTitle>
                             </SheetHeader>
                             <div className="flex flex-col gap-4 px-4 pb-6">
+                                <div>
+                                    <p className="text-xs text-lp-on-surface-variant mb-2 font-medium">Kategori</p>
+                                    <div className="flex gap-2 overflow-x-auto pb-1">
+                                        {CATEGORIES.map((cat) => (
+                                            <button
+                                                key={cat.value}
+                                                type="button"
+                                                onClick={() => handleFilter('category', cat.value)}
+                                                className={`flex-shrink-0 px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
+                                                    category === cat.value
+                                                        ? 'bg-lp-primary text-lp-on-primary'
+                                                        : 'bg-lp-surface-container text-lp-on-surface-variant'
+                                                }`}
+                                            >
+                                                {cat.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-xs text-lp-on-surface-variant mb-1">Urutkan</label>
+                                    <select
+                                        value={sort}
+                                        onChange={e => handleFilter('sort', e.target.value)}
+                                        className="w-full rounded-lg border border-lp-outline-variant px-3 py-2.5 text-sm focus:outline-none"
+                                    >
+                                        {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                                    </select>
+                                </div>
                                 <FilterFields
                                     minPrice={minPrice} setMinPrice={setMinPrice}
                                     maxPrice={maxPrice} setMaxPrice={setMaxPrice}
                                     minRating={minRating} verified={verified}
                                     applyFilter={applyFilter} handleFilter={handleFilter}
+                                    variant="sheet"
                                 />
                                 <button
+                                    type="button"
                                     onClick={() => setShowFilters(false)}
-                                    className="bg-lp-primary text-lp-on-primary py-3 rounded-lg text-sm font-semibold mt-2"
+                                    className="bg-lp-primary text-lp-on-primary py-3 rounded-lg text-sm font-semibold mt-2 active:opacity-90"
                                 >
                                     Terapkan Filter
                                 </button>
@@ -347,6 +381,14 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
                         <Search className="h-12 w-12 opacity-25" />
                         <p className="text-lg font-medium">Tidak ada brand yang ditemukan.</p>
                         <p className="text-sm">Coba ubah kata kunci atau filter.</p>
+                        {hasActiveFilters && (
+                            <button
+                                onClick={() => router.get('/')}
+                                className="mt-2 bg-lp-primary text-lp-on-primary px-5 py-2.5 rounded-lg text-sm font-semibold hover:opacity-90 active:scale-[0.98] transition-all"
+                            >
+                                Reset semua filter
+                            </button>
+                        )}
                     </div>
                 ) : (
                     <>
@@ -367,6 +409,8 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
                                         onClick={() => toggleCompare(brand)}
                                         className={`absolute top-2 left-2 z-10 w-11 h-11 flex items-center justify-center rounded-full shadow transition-colors ${compareList.find(b => b.id === brand.id) ? 'bg-lp-primary text-lp-on-primary' : 'bg-white/90 text-lp-on-surface-variant hover:bg-lp-primary hover:text-lp-on-primary'}`}
                                         title="Bandingkan"
+                                        aria-label="Bandingkan brand ini"
+                                        aria-pressed={!!compareList.find(b => b.id === brand.id)}
                                     >
                                         <GitCompare className="h-4 w-4" />
                                     </button>
@@ -374,44 +418,7 @@ export default function Welcome({ brands, filters, featuredBrands }: Props) {
                             ))}
                         </div>
 
-                        {/* Pagination */}
-                        {brands.last_page > 1 && (
-                            <div className="flex justify-center items-center gap-2 mt-12">
-                                <button
-                                    disabled={brands.current_page === 1}
-                                    onClick={() => goToPage(brands.current_page - 1)}
-                                    className="w-10 h-10 flex items-center justify-center rounded-lg border border-lp-outline-variant text-lp-on-surface-variant hover:bg-lp-surface-container transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                                >
-                                    <ChevronLeft className="h-4 w-4" />
-                                </button>
-
-                                {buildPages().map((item, idx) =>
-                                    item === '...' ? (
-                                        <span key={`e-${idx}`} className="text-lp-on-surface-variant px-1 text-sm">...</span>
-                                    ) : (
-                                        <button
-                                            key={item}
-                                            onClick={() => goToPage(item as number)}
-                                            className={`w-10 h-10 flex items-center justify-center rounded-lg text-sm font-semibold transition-colors ${
-                                                brands.current_page === item
-                                                    ? 'bg-lp-primary text-lp-on-primary'
-                                                    : 'border border-lp-outline-variant text-lp-on-surface-variant hover:bg-lp-surface-container'
-                                            }`}
-                                        >
-                                            {item}
-                                        </button>
-                                    ),
-                                )}
-
-                                <button
-                                    disabled={brands.current_page === brands.last_page}
-                                    onClick={() => goToPage(brands.current_page + 1)}
-                                    className="w-10 h-10 flex items-center justify-center rounded-lg border border-lp-outline-variant text-lp-on-surface-variant hover:bg-lp-surface-container transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                                >
-                                    <ChevronRight className="h-4 w-4" />
-                                </button>
-                            </div>
-                        )}
+                        <Pagination currentPage={brands.current_page} lastPage={brands.last_page} onPage={goToPage} />
                     </>
                 )}
             </div>

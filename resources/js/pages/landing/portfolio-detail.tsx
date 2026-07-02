@@ -64,6 +64,8 @@ export default function PortfolioDetailPage({ brand, portfolio }: Props) {
                         <video
                             src={`/storage/${portfolio.video}`}
                             controls
+                            preload="none"
+                            poster={portfolio.images[0] ? `/storage/${portfolio.images[0].image}` : undefined}
                             className="w-full max-h-[500px] rounded-xl bg-black"
                         />
                     </div>
@@ -96,6 +98,8 @@ export default function PortfolioDetailPage({ brand, portfolio }: Props) {
                                         <img
                                             src={`/storage/${image.image}`}
                                             alt={portfolio.title}
+                                            loading="lazy"
+                                            decoding="async"
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                     </div>

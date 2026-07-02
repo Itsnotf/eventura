@@ -33,6 +33,39 @@ import {
 import { useState } from 'react';
 import { Toaster } from 'sonner';
 
+function NavItem({
+    href,
+    children,
+    variant = 'desktop',
+    onClick,
+}: {
+    href: string;
+    children: React.ReactNode;
+    variant?: 'desktop' | 'mobile';
+    onClick?: () => void;
+}) {
+    const { url } = usePage();
+    const path = url.split('?')[0];
+    const active = href === '/' ? path === '/' : path.startsWith(href);
+
+    const className =
+        variant === 'desktop'
+            ? `text-sm font-semibold tracking-wide transition-colors ${
+                  active ? 'text-lp-primary' : 'text-lp-on-surface-variant hover:text-lp-primary'
+              }`
+            : `flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                  active
+                      ? 'bg-lp-surface-container-low text-lp-primary'
+                      : 'text-lp-on-surface hover:bg-lp-surface-container-low'
+              }`;
+
+    return (
+        <Link href={href} aria-current={active ? 'page' : undefined} className={className} onClick={onClick}>
+            {children}
+        </Link>
+    );
+}
+
 function LandingNav() {
     const { auth, name } = usePage<SharedData>().props;
     const { isAdmin, isVendor, isUser } = useRole();
@@ -43,8 +76,6 @@ function LandingNav() {
         router.flushAll();
     };
 
-    const navLinkClass =
-        'text-lp-on-surface-variant hover:text-lp-primary transition-colors text-sm font-semibold tracking-wide';
     const mobileSectionLabel =
         'text-xs uppercase tracking-wider text-lp-on-surface-variant px-4 pt-3 pb-1 font-semibold select-none';
     const mobileItemClass =
@@ -61,13 +92,11 @@ function LandingNav() {
                             {name}
                         </Link>
                         <div className="hidden md:flex items-center gap-6">
-                            <Link href="/" className={navLinkClass}>Beranda</Link>
-                            <Link href="/portfolio" className={navLinkClass}>Portfolio</Link>
-                            {(!auth?.user || isUser) && (
-                                <Link href="/join" className={navLinkClass}>Daftarkan Brand</Link>
-                            )}
-                            <Link href="/tentang-kami" className={navLinkClass}>Tentang Kami</Link>
-                            <Link href="/kontak" className={navLinkClass}>Kontak</Link>
+                            <NavItem href="/">Beranda</NavItem>
+                            <NavItem href="/portfolio">Portfolio</NavItem>
+                            {(!auth?.user || isUser) && <NavItem href="/join">Daftarkan Brand</NavItem>}
+                            <NavItem href="/tentang-kami">Tentang Kami</NavItem>
+                            <NavItem href="/kontak">Kontak</NavItem>
                         </div>
                     </div>
 
@@ -208,9 +237,10 @@ function LandingNav() {
 
                     {/* Mobile hamburger */}
                     <button
-                        className="md:hidden p-2 text-lp-on-surface rounded-lg hover:bg-lp-surface-container-low transition-colors"
+                        className="md:hidden w-11 h-11 flex items-center justify-center text-lp-on-surface rounded-lg hover:bg-lp-surface-container-low active:bg-lp-surface-container transition-colors"
                         onClick={() => setOpen(!open)}
                         aria-label="Menu"
+                        aria-expanded={open}
                     >
                         {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                     </button>
@@ -226,13 +256,13 @@ function LandingNav() {
                     <div className="flex flex-col p-3 gap-0.5">
                         {/* ── Navigasi ── */}
                         <p className={mobileSectionLabel}>Menu</p>
-                        <Link href="/" className={mobileItemClass} onClick={() => setOpen(false)}>Beranda</Link>
-                        <Link href="/portfolio" className={mobileItemClass} onClick={() => setOpen(false)}>Portfolio</Link>
+                        <NavItem href="/" variant="mobile" onClick={() => setOpen(false)}>Beranda</NavItem>
+                        <NavItem href="/portfolio" variant="mobile" onClick={() => setOpen(false)}>Portfolio</NavItem>
                         {(!auth?.user || isUser) && (
-                            <Link href="/join" className={mobileItemClass} onClick={() => setOpen(false)}>Daftarkan Brand</Link>
+                            <NavItem href="/join" variant="mobile" onClick={() => setOpen(false)}>Daftarkan Brand</NavItem>
                         )}
-                        <Link href="/tentang-kami" className={mobileItemClass} onClick={() => setOpen(false)}>Tentang Kami</Link>
-                        <Link href="/kontak" className={mobileItemClass} onClick={() => setOpen(false)}>Kontak</Link>
+                        <NavItem href="/tentang-kami" variant="mobile" onClick={() => setOpen(false)}>Tentang Kami</NavItem>
+                        <NavItem href="/kontak" variant="mobile" onClick={() => setOpen(false)}>Kontak</NavItem>
 
                         <hr className="border-lp-outline-variant my-2" />
 
@@ -373,8 +403,8 @@ function LandingFooter() {
                     <div className="md:col-span-2">
                         <h2 className="font-playfair text-2xl font-semibold text-lp-primary mb-3">{name}</h2>
                         <p className="text-lp-on-surface-variant text-sm leading-relaxed max-w-sm">
-                            Platform terpercaya untuk menemukan Event Organizer dan Wedding Organizer profesional di
-                            Palembang dan sekitarnya. Wujudkan acara impian Anda dengan mudah.
+                            Platform terpercaya untuk menemukan Event Organizer, Wedding Organizer, Content Creator,
+                            dan Catering profesional di Palembang. Wujudkan acara impian Anda dengan mudah.
                         </p>
                     </div>
                     <div>
@@ -395,7 +425,7 @@ function LandingFooter() {
                 </div>
                 <div className="border-t border-lp-outline-variant mt-10 pt-6">
                     <p className="text-lp-on-surface-variant text-xs text-center">
-                        © {new Date().getFullYear()} {name}. Platform Marketplace EO & WO Palembang.
+                        © {new Date().getFullYear()} {name}. Platform Marketplace Vendor Acara Palembang.
                     </p>
                 </div>
             </div>

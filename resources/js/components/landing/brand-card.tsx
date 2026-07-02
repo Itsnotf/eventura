@@ -1,4 +1,4 @@
-import { isMapsEmbed } from '@/lib/utils';
+import { extractMapsPlaceLabel, isMapsEmbed } from '@/lib/utils';
 import { type Auth, type Brand } from '@/types';
 import { Link, router, usePage } from '@inertiajs/react';
 import { BadgeCheck, Heart, MapPin, Star } from 'lucide-react';
@@ -54,7 +54,7 @@ export function BrandInitials({ name, className }: { name: string; className?: s
 
 export function BrandLogo({ brand, className }: { brand: Pick<Brand, 'logo' | 'name'>; className?: string }) {
     if (brand.logo) {
-        return <img src={`/storage/${brand.logo}`} alt={brand.name} className={`object-cover ${className ?? ''}`} />;
+        return <img src={`/storage/${brand.logo}`} alt={brand.name} loading="lazy" decoding="async" className={`object-cover ${className ?? ''}`} />;
     }
     return <BrandInitials name={brand.name} className={className} />;
 }
@@ -75,24 +75,31 @@ function FavoriteButton({ brandId }: { brandId: number }) {
     return (
         <button
             onClick={toggle}
-            className="absolute top-3 right-3 z-10 bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow hover:scale-110 transition-transform"
+            className="absolute top-2 right-2 z-10 w-11 h-11 flex items-center justify-center bg-white/90 backdrop-blur-sm rounded-full shadow hover:scale-110 active:scale-95 transition-transform"
             title={isFavorited ? 'Hapus dari favorit' : 'Tambah ke favorit'}
+            aria-label={isFavorited ? 'Hapus dari favorit' : 'Tambah ke favorit'}
+            aria-pressed={isFavorited}
         >
-            <Heart className={`h-4 w-4 transition-colors ${isFavorited ? 'fill-rose-500 text-rose-500' : 'text-lp-on-surface-variant'}`} />
+            <Heart className={`h-5 w-5 transition-colors ${isFavorited ? 'fill-rose-500 text-rose-500' : 'text-lp-on-surface-variant'}`} />
         </button>
     );
 }
 
 export function BrandCard({ brand }: { brand: BrandWithStats }) {
+    const locationLabel = brand.address
+        ? (isMapsEmbed(brand.address) ? extractMapsPlaceLabel(brand.address) : brand.address)
+        : null;
     return (
         <Link href={`/brand/${brand.slug}`} className="block h-full">
-            <article className="bg-lp-surface-container-lowest rounded-xl border border-lp-outline-variant shadow-[0_4px_20px_rgba(18,67,65,0.08)] overflow-hidden group hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(18,67,65,0.14)] transition-all duration-300 flex flex-col h-full cursor-pointer">
+            <article className="bg-lp-surface-container-lowest rounded-xl border border-lp-outline-variant shadow-[0_4px_20px_rgba(18,67,65,0.08)] overflow-hidden group hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(18,67,65,0.14)] transition-all duration-300 active:scale-[0.99] flex flex-col h-full cursor-pointer">
                 {/* Cover image */}
                 <div className="relative h-48 overflow-hidden bg-lp-surface-container flex-shrink-0">
                     {brand.cover_image ? (
                         <img
                             src={`/storage/${brand.cover_image}`}
                             alt={brand.name}
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                     ) : (
@@ -132,10 +139,10 @@ export function BrandCard({ brand }: { brand: BrandWithStats }) {
                         <p className="text-lp-on-surface-variant text-xs italic">Belum ada rating</p>
                     )}
 
-                    {brand.address && !isMapsEmbed(brand.address) && (
+                    {locationLabel && (
                         <p className="text-lp-on-surface-variant text-sm flex items-center gap-1">
                             <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-                            <span className="truncate">{brand.address}</span>
+                            <span className="truncate">{locationLabel}</span>
                         </p>
                     )}
 

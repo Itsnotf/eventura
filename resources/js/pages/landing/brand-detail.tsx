@@ -3,7 +3,7 @@ import { PortfolioThumbnail } from '@/components/landing/portfolio-thumbnail';
 import LandingLayout from '@/layouts/landing-layout';
 import { type Brand, type BrandPackage, type BrandPortfolio, type ImagePortfolio } from '@/types';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
-import { isMapsEmbed } from '@/lib/utils';
+import { extractMapsPlaceLabel, isMapsEmbed } from '@/lib/utils';
 import { ArrowLeft, BadgeCheck, CalendarPlus, Globe, ImageOff, Instagram, MapPin, MessageCircle, Send, Star, X } from 'lucide-react';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 
@@ -470,7 +470,7 @@ function MobileWhatsAppBar({ brand }: { brand: BrandWithRelations }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackWhatsapp(brand.slug)}
-                className="w-full bg-[#25D366] text-white py-3 px-4 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+                className="w-full bg-[#25D366] text-white py-3 px-4 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-[0.98]"
             >
                 <MessageCircle className="h-4 w-4" />
                 Chat via WhatsApp
@@ -484,6 +484,9 @@ export default function BrandDetailPage({ brand, testimonials, avgRating, review
     const isLoggedIn = !!auth?.user;
     const hasWhatsApp = !!brand.whatsapp_number;
     const plansForCard = isLoggedIn ? userEventPlans : undefined;
+    const locationLabel = brand.address
+        ? (isMapsEmbed(brand.address) ? extractMapsPlaceLabel(brand.address) : brand.address)
+        : null;
 
     return (
         <LandingLayout>
@@ -496,7 +499,7 @@ export default function BrandDetailPage({ brand, testimonials, avgRating, review
             {/* Hero cover */}
             <section className="relative w-full h-[260px] sm:h-[360px] md:h-[480px] bg-lp-surface-container">
                 {brand.cover_image ? (
-                    <img src={`/storage/${brand.cover_image}`} alt={brand.name} className="w-full h-full object-cover" />
+                    <img src={`/storage/${brand.cover_image}`} alt={brand.name} fetchPriority="high" decoding="async" className="w-full h-full object-cover" />
                 ) : (
                     <BrandInitials name={brand.name} className="w-full h-full text-6xl" />
                 )}
@@ -555,6 +558,7 @@ export default function BrandDetailPage({ brand, testimonials, avgRating, review
                                 <video
                                     src={`/storage/${brand.company_profile_video}`}
                                     controls
+                                    preload="none"
                                     poster={brand.cover_image ? `/storage/${brand.cover_image}` : undefined}
                                     className="w-full max-h-[400px] rounded-xl bg-black"
                                 />
@@ -567,8 +571,8 @@ export default function BrandDetailPage({ brand, testimonials, avgRating, review
                                     <MapPin className="h-5 w-5 text-lp-primary mt-0.5 flex-shrink-0" />
                                     <div>
                                         <p className="text-xs font-semibold text-lp-on-surface uppercase tracking-wider mb-1">Lokasi</p>
-                                        {!isMapsEmbed(brand.address) && (
-                                            <p className="text-lp-on-surface-variant text-sm">{brand.address}</p>
+                                        {locationLabel && (
+                                            <p className="text-lp-on-surface-variant text-sm">{locationLabel}</p>
                                         )}
                                     </div>
                                 </div>

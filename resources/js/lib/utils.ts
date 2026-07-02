@@ -49,3 +49,26 @@ export function useRole() {
 
 export const isMapsEmbed = (v?: string | null): boolean =>
     !!v && v.startsWith('https://www.google.com/maps/embed');
+
+/**
+ * Ekstrak label tempat (nama/alamat singkat) dari Google Maps embed URL.
+ * Best-effort: mengembalikan null bila URL hanya berisi pin koordinat.
+ */
+export const extractMapsPlaceLabel = (embedUrl?: string | null): string | null => {
+    if (!embedUrl || !isMapsEmbed(embedUrl)) return null;
+    const matches = [...embedUrl.matchAll(/!2s([^!]+)/g)].map((m) => m[1]);
+    // Segmen !2s paling akhir biasanya kode negara (mis. "id"); label tempat ada sebelumnya.
+    for (const raw of matches.reverse()) {
+        try {
+            const decoded = decodeURIComponent(raw.replace(/\+/g, ' ')).trim();
+            if (!decoded) continue;
+            if (/^0x[0-9a-f]/i.test(decoded)) continue; // place-id heksadesimal
+            if (/^[-\d.,\s°]+$/.test(decoded)) continue; // koordinat murni
+            if (/^[a-z]{2}$/i.test(decoded)) continue; // kode bahasa/negara
+            return decoded;
+        } catch {
+            continue;
+        }
+    }
+    return null;
+};

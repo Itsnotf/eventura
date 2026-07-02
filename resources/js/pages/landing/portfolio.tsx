@@ -1,9 +1,10 @@
 import { BrandInitials, BrandLogo } from '@/components/landing/brand-card';
+import { Pagination } from '@/components/landing/pagination';
 import { PortfolioThumbnail } from '@/components/landing/portfolio-thumbnail';
 import LandingLayout from '@/layouts/landing-layout';
 import { type Brand, type BrandPortfolio, type ImagePortfolio } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { ChevronLeft, ChevronRight, Images } from 'lucide-react';
+import { Images } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
 interface PortfolioWithBrandAndImage extends BrandPortfolio {
@@ -33,7 +34,7 @@ function PortfolioCard({ portfolio }: { portfolio: PortfolioWithBrandAndImage })
 
     return (
         <Link href={`/brand/${portfolio.brand.slug}/portfolio/${portfolio.id}`} className="block group">
-            <article className="bg-lp-surface-container-lowest rounded-xl border border-lp-outline-variant shadow-[0_4px_20px_rgba(18,67,65,0.08)] overflow-hidden hover:shadow-[0_8px_30px_rgba(18,67,65,0.14)] transition-all duration-300 hover:-translate-y-1">
+            <article className="bg-lp-surface-container-lowest rounded-xl border border-lp-outline-variant shadow-[0_4px_20px_rgba(18,67,65,0.08)] overflow-hidden hover:shadow-[0_8px_30px_rgba(18,67,65,0.14)] transition-all duration-300 hover:-translate-y-1 active:scale-[0.99]">
                 {/* Thumbnail */}
                 <PortfolioThumbnail
                     portfolio={portfolio}
@@ -79,26 +80,12 @@ export default function PortfolioPage({ portfolios, eventTypes, filters }: Props
         const params: Record<string, string | number> = {};
         if (type) params.event_type = type;
         if (page) params.page = page;
-        router.get('/portfolio', params, { preserveState: true, only: ['portfolios', 'filters'] });
+        router.get('/portfolio', params, { preserveState: true, preserveScroll: true, only: ['portfolios', 'filters'] });
     }, []);
 
     function handleEventType(type: string) {
         setEventType(type);
         applyFilter(type);
-    }
-
-    function buildPages(): (number | '...')[] {
-        const pages: (number | '...')[] = [];
-        const total = portfolios.last_page;
-        const current = portfolios.current_page;
-        for (let i = 1; i <= total; i++) {
-            if (i === 1 || i === total || Math.abs(i - current) <= 1) {
-                pages.push(i);
-            } else if (pages[pages.length - 1] !== '...') {
-                pages.push('...');
-            }
-        }
-        return pages;
     }
 
     return (
@@ -153,7 +140,10 @@ export default function PortfolioPage({ portfolios, eventTypes, filters }: Props
                         <Images className="h-12 w-12 opacity-25" />
                         <p className="text-lg font-medium">Belum ada portfolio yang tersedia.</p>
                         {eventType && (
-                            <button onClick={() => handleEventType('')} className="text-lp-primary text-sm font-semibold hover:underline">
+                            <button
+                                onClick={() => handleEventType('')}
+                                className="mt-2 bg-lp-primary text-lp-on-primary px-5 py-2.5 rounded-lg text-sm font-semibold hover:opacity-90 active:scale-[0.98] transition-all"
+                            >
                                 Tampilkan semua
                             </button>
                         )}
@@ -171,44 +161,11 @@ export default function PortfolioPage({ portfolios, eventTypes, filters }: Props
                             ))}
                         </div>
 
-                        {/* Pagination */}
-                        {portfolios.last_page > 1 && (
-                            <div className="flex justify-center items-center gap-2 mt-12">
-                                <button
-                                    disabled={portfolios.current_page === 1}
-                                    onClick={() => applyFilter(eventType, portfolios.current_page - 1)}
-                                    className="w-10 h-10 flex items-center justify-center rounded-lg border border-lp-outline-variant text-lp-on-surface-variant hover:bg-lp-surface-container transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                                >
-                                    <ChevronLeft className="h-4 w-4" />
-                                </button>
-
-                                {buildPages().map((item, idx) =>
-                                    item === '...' ? (
-                                        <span key={`e-${idx}`} className="text-lp-on-surface-variant px-1 text-sm">...</span>
-                                    ) : (
-                                        <button
-                                            key={item}
-                                            onClick={() => applyFilter(eventType, item as number)}
-                                            className={`w-10 h-10 flex items-center justify-center rounded-lg text-sm font-semibold transition-colors ${
-                                                portfolios.current_page === item
-                                                    ? 'bg-lp-primary text-lp-on-primary'
-                                                    : 'border border-lp-outline-variant text-lp-on-surface-variant hover:bg-lp-surface-container'
-                                            }`}
-                                        >
-                                            {item}
-                                        </button>
-                                    ),
-                                )}
-
-                                <button
-                                    disabled={portfolios.current_page === portfolios.last_page}
-                                    onClick={() => applyFilter(eventType, portfolios.current_page + 1)}
-                                    className="w-10 h-10 flex items-center justify-center rounded-lg border border-lp-outline-variant text-lp-on-surface-variant hover:bg-lp-surface-container transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                                >
-                                    <ChevronRight className="h-4 w-4" />
-                                </button>
-                            </div>
-                        )}
+                        <Pagination
+                            currentPage={portfolios.current_page}
+                            lastPage={portfolios.last_page}
+                            onPage={(p) => applyFilter(eventType, p)}
+                        />
                     </>
                 )}
             </div>
