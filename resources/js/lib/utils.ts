@@ -72,3 +72,16 @@ export const extractMapsPlaceLabel = (embedUrl?: string | null): string | null =
     }
     return null;
 };
+
+/**
+ * Bangun URL Google Maps yang bisa dibuka langsung di tab baru (bukan URL embed
+ * untuk iframe), diambil dari koordinat yang terkandung di dalam embed URL.
+ * Best-effort: null bila pola koordinat tak ditemukan.
+ */
+export const mapsViewUrl = (embedUrl?: string | null): string | null => {
+    if (!embedUrl || !isMapsEmbed(embedUrl)) return null;
+    const match = embedUrl.match(/!2d(-?[\d.]+)!3d(-?[\d.]+)/);
+    if (!match) return null;
+    const [, lng, lat] = match;
+    return `https://www.google.com/maps?q=${lat},${lng}`;
+};
